@@ -1,0 +1,15 @@
+*.class
+
+*.log
+
+*.jar
+*.war
+
+HELP.md
+
+/target/
+
+
+.idea
+/
+
