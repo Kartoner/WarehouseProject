@@ -1,2 +1,0 @@
-# warehouseProject
-Zajęcia frameworki biznesowe 
