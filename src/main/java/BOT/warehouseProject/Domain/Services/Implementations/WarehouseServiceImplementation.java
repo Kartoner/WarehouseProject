@@ -11,10 +11,12 @@ import BOT.warehouseProject.Domain.Services.IWarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class WarehouseServiceImplementation implements IWarehouseService {
 
     private static final Logger log = LoggerFactory.getLogger(WarehouseServiceImplementation.class);
@@ -27,61 +29,156 @@ public class WarehouseServiceImplementation implements IWarehouseService {
 
     @Override
     public Boolean createWarehouseItem(String itemName, ItemType itemType, String itemDescription, Double price) {
-        return null;
+        try {
+            WarehouseItem warehouseItem = new WarehouseItem(itemName, itemType, itemDescription, price);
+
+            warehouseItemRepository.save(warehouseItem);
+        } catch (Exception ex) {
+            log.info("Failed creating new item");
+
+            return Boolean.FALSE;
+        }
+        log.info("Created new item");
+
+        return Boolean.TRUE;
     }
 
     @Override
     public Boolean updateStock(Long id, Integer quantity) {
-        return null;
+        try {
+            WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
+
+            warehouseItem.setQuantity(quantity);
+
+            warehouseItemRepository.save(warehouseItem);
+        } catch (Exception ex) {
+            log.info("Failed updating item");
+
+            return Boolean.FALSE;
+        }
+        log.info("Updated item");
+
+        return Boolean.TRUE;
     }
 
     @Override
-    public Boolean updateItemInfo(ItemType itemType, String itemDescription) {
-        return null;
+    public Boolean updateItemInfo(Long id, ItemType itemType, String itemDescription) {
+        try {
+            WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
+
+            warehouseItem.setItemType(itemType);
+            warehouseItem.setItemDescription(itemDescription);
+
+            warehouseItemRepository.save(warehouseItem);
+        } catch (Exception ex) {
+            log.info("Failed updating item info");
+
+            return Boolean.FALSE;
+        }
+        log.info("Updated item info");
+
+        return Boolean.TRUE;
     }
 
     @Override
     public WarehouseItem getWarehouseItem(Long id) {
-        return null;
+        return warehouseItemRepository.getOne(id);
     }
 
     @Override
     public List<WarehouseItem> getAllItems() {
-        return null;
+        return warehouseItemRepository.findAll();
     }
 
     @Override
     public List<WarehouseItem> getItemsByType(ItemType itemType) {
-        return null;
+        return warehouseItemRepository.findByItemType(itemType);
     }
 
     @Override
-    public Boolean createDelivery(User employeeAccepting, User customerOrdering, String deliveryAddress, DeliveryStatus deliveryStatus, Map<WarehouseItem, Integer> itemsOrdered, Double overallPrice) {
-        return null;
+    public Boolean createDelivery(User employeeAccepting,
+                                  User customerOrdering,
+                                  String deliveryAddress,
+                                  DeliveryStatus deliveryStatus,
+                                  Map<WarehouseItem, Integer> itemsOrdered,
+                                  Double overallPrice) {
+        try {
+            Delivery delivery = new Delivery(employeeAccepting,
+                    customerOrdering,
+                    deliveryAddress,
+                    deliveryStatus,
+                    itemsOrdered,
+                    overallPrice);
+
+            deliveryRepository.save(delivery);
+        } catch (Exception ex) {
+            log.info("Failed creating delivery");
+
+            return Boolean.FALSE;
+        }
+        log.info("Created new delivery");
+
+        return Boolean.TRUE;
     }
 
     @Override
-    public Boolean updateDelivery(User employeeAccepting, User customerOrdering, String deliveryAddress, DeliveryStatus deliveryStatus, Map<WarehouseItem, Integer> itemsOrdered, Double overallPrice, Boolean isPaid) {
-        return null;
+    public Boolean updateDelivery(Long id,
+                                  User employeeAccepting,
+                                  User customerOrdering,
+                                  String deliveryAddress,
+                                  DeliveryStatus deliveryStatus,
+                                  Map<WarehouseItem, Integer> itemsOrdered,
+                                  Double overallPrice,
+                                  Boolean isPaid) {
+        try {
+            Delivery delivery = deliveryRepository.getOne(id);
+
+            delivery.setEmployeeAccepting(employeeAccepting);
+            delivery.setCustomerOrdering(customerOrdering);
+            delivery.setDeliveryAddress(deliveryAddress);
+            delivery.setDeliveryStatus(deliveryStatus);
+            delivery.setItemsOrdered(itemsOrdered);
+            delivery.setOverallPrice(overallPrice);
+            delivery.setPaid(isPaid);
+
+            deliveryRepository.save(delivery);
+        } catch (Exception ex) {
+            log.info("Failed updating delivery");
+
+            return Boolean.FALSE;
+        }
+        log.info("Updated delivery");
+
+        return Boolean.TRUE;
     }
 
     @Override
     public Boolean checkDelivery(Delivery delivery) {
-        return null;
+        Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
+        WarehouseItem tempItem;
+
+        for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
+            tempItem = warehouseItemRepository.getOne(entry.getKey().getId());
+            if (tempItem.getQuantity() - entry.getValue() < 0){
+                return Boolean.FALSE;
+            }
+        }
+
+        return Boolean.TRUE;
     }
 
     @Override
     public Delivery getDelivery(Long id) {
-        return null;
+        return deliveryRepository.getOne(id);
     }
 
     @Override
     public List<Delivery> getAllDeliveries() {
-        return null;
+        return deliveryRepository.findAll();
     }
 
     @Override
     public List<Delivery> getDeliveriesByStatus(DeliveryStatus deliveryStatus) {
-        return null;
+        return deliveryRepository.findByDeliveryStatus(deliveryStatus);
     }
 }

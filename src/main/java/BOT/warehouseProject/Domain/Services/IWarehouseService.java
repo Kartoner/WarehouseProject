@@ -17,7 +17,7 @@ public interface IWarehouseService {
 
     public Boolean updateStock(Long id, Integer quantity);
 
-    public Boolean updateItemInfo(ItemType itemType, String itemDescription);
+    public Boolean updateItemInfo(Long id, ItemType itemType, String itemDescription);
 
     public WarehouseItem getWarehouseItem(Long id);
 
@@ -32,7 +32,8 @@ public interface IWarehouseService {
                                   Map<WarehouseItem, Integer> itemsOrdered,
                                   Double overallPrice);
 
-    public Boolean updateDelivery(User employeeAccepting,
+    public Boolean updateDelivery(Long id,
+                                  User employeeAccepting,
                                   User customerOrdering,
                                   String deliveryAddress,
                                   DeliveryStatus deliveryStatus,

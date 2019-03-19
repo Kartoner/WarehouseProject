@@ -6,7 +6,7 @@ import BOT.warehouseProject.Authentication.Enums.UserStatus;
 import java.util.List;
 
 public interface IUserService {
-    public Boolean authenticate(String username, String password);
+    public User authenticate(String username, String password);
 
     public Boolean createUser(String username,
                               String password,
@@ -17,7 +17,8 @@ public interface IUserService {
                               String email,
                               String phoneNumber);
 
-    public Boolean updateUser(String username,
+    public Boolean updateUser(Long id,
+                              String username,
                               String password,
                               UserStatus userStatus,
                               String firstName,

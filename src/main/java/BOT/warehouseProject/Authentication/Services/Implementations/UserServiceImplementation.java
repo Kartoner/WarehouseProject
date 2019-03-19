@@ -7,11 +7,11 @@ import BOT.warehouseProject.Database.Repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class UserServiceImplementation implements IUserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImplementation.class);
@@ -20,17 +20,32 @@ public class UserServiceImplementation implements IUserService {
     private UserRepository userRepository;
 
     @Override
-    public Boolean authenticate(String username, String password) {
+    public User authenticate(String username, String password) {
         return null;
     }
 
     @Override
-    public Boolean createUser(String username, String password, UserStatus userStatus, String firstName, String lastName, String address, String email, String phoneNumber) {
+    public Boolean createUser(String username,
+                              String password,
+                              UserStatus userStatus,
+                              String firstName,
+                              String lastName,
+                              String address,
+                              String email,
+                              String phoneNumber) {
         return null;
     }
 
     @Override
-    public Boolean updateUser(String username, String password, UserStatus userStatus, String firstName, String lastName, String address, String email, String phoneNumber) {
+    public Boolean updateUser(Long id,
+                              String username,
+                              String password,
+                              UserStatus userStatus,
+                              String firstName,
+                              String lastName,
+                              String address,
+                              String email,
+                              String phoneNumber) {
         return null;
     }
 
