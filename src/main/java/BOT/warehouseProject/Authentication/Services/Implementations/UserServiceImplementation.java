@@ -49,6 +49,18 @@ public class UserServiceImplementation implements IUserService {
     }
 
     @Override
+    public Boolean deleteUser(Long id) {
+        try{
+            userRepository.deleteById(id);
+        } catch (Exception ex){
+            log.info("Failed deleting user");
+        }
+        log.info("Deleted user");
+
+        return Boolean.TRUE;
+    }
+
+    @Override
     public User getUser(Long id) {
         return userRepository.getOne(id);
     }

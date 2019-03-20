@@ -1,13 +1,11 @@
 package BOT.warehouseProject.Domain.Services;
 
-import BOT.warehouseProject.Authentication.Entities.User;
 import BOT.warehouseProject.Domain.Entities.Delivery;
 import BOT.warehouseProject.Domain.Entities.WarehouseItem;
 import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
 import BOT.warehouseProject.Domain.Enums.ItemType;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IWarehouseService {
     public Boolean createWarehouseItem(WarehouseItem warehouseItem);
@@ -15,6 +13,8 @@ public interface IWarehouseService {
     public Boolean updateStock(Long id, Integer quantity);
 
     public Boolean updateItemInfo(Long id, ItemType itemType, String itemDescription);
+
+    public Boolean deleteWarehouseItem(Long id);
 
     public WarehouseItem getWarehouseItem(Long id);
 
@@ -26,7 +26,7 @@ public interface IWarehouseService {
 
     public Boolean updateDelivery(Delivery delivery);
 
-    public Boolean checkDelivery(Delivery delivery);
+    public Boolean deleteDelivery(Long id);
 
     public Delivery getDelivery(Long id);
 

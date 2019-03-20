@@ -78,6 +78,18 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
+    public Boolean deleteWarehouseItem(Long id){
+        try{
+            warehouseItemRepository.deleteById(id);
+        } catch (Exception ex){
+            log.info("Failed deleting item");
+        }
+        log.info("Deleted item");
+
+        return Boolean.TRUE;
+    }
+
+    @Override
     public WarehouseItem getWarehouseItem(Long id) {
         return warehouseItemRepository.getOne(id);
     }
@@ -95,7 +107,13 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     @Override
     public Boolean createDelivery(Delivery delivery) {
         try {
-            deliveryRepository.save(delivery);
+            if (checkDelivery(delivery)){
+                deliveryRepository.save(delivery);
+            } else {
+                log.info("Invalid delivery");
+
+                return Boolean.FALSE;
+            }
         } catch (Exception ex) {
             log.info("Failed creating delivery");
 
@@ -121,16 +139,13 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
-    public Boolean checkDelivery(Delivery delivery) {
-        Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
-        WarehouseItem tempItem;
-
-        for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-            tempItem = warehouseItemRepository.getOne(entry.getKey().getId());
-            if (tempItem.getQuantity() - entry.getValue() < 0){
-                return Boolean.FALSE;
-            }
+    public Boolean deleteDelivery(Long id) {
+        try{
+            deliveryRepository.deleteById(id);
+        } catch (Exception ex){
+            log.info("Failed deleting delivery");
         }
+        log.info("Deleted delivery");
 
         return Boolean.TRUE;
     }
@@ -148,5 +163,19 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     @Override
     public List<Delivery> getDeliveriesByStatus(DeliveryStatus deliveryStatus) {
         return deliveryRepository.findByDeliveryStatus(deliveryStatus);
+    }
+
+    private Boolean checkDelivery(Delivery delivery) {
+        Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
+        WarehouseItem tempItem;
+
+        for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
+            tempItem = warehouseItemRepository.getOne(entry.getKey().getId());
+            if (tempItem.getQuantity() - entry.getValue() < 0){
+                return Boolean.FALSE;
+            }
+        }
+
+        return Boolean.TRUE;
     }
 }

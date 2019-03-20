@@ -12,6 +12,8 @@ public interface IUserService {
 
     public Boolean updateUser(User user);
 
+    public Boolean deleteUser(Long id);
+
     public User getUser(Long id);
 
     public List<User> getAllUsers();
