@@ -1,6 +1,5 @@
 package BOT.warehouseProject.Domain.Services.Implementations;
 
-import BOT.warehouseProject.Authentication.Entities.User;
 import BOT.warehouseProject.Database.Repositories.DeliveryRepository;
 import BOT.warehouseProject.Database.Repositories.WarehouseItemRepository;
 import BOT.warehouseProject.Domain.Entities.Delivery;
@@ -28,10 +27,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     private DeliveryRepository deliveryRepository;
 
     @Override
-    public Boolean createWarehouseItem(String itemName, ItemType itemType, String itemDescription, Double price) {
+    public Boolean createWarehouseItem(WarehouseItem warehouseItem) {
         try {
-            WarehouseItem warehouseItem = new WarehouseItem(itemName, itemType, itemDescription, price);
-
             warehouseItemRepository.save(warehouseItem);
         } catch (Exception ex) {
             log.info("Failed creating new item");
@@ -96,20 +93,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
-    public Boolean createDelivery(User employeeAccepting,
-                                  User customerOrdering,
-                                  String deliveryAddress,
-                                  DeliveryStatus deliveryStatus,
-                                  Map<WarehouseItem, Integer> itemsOrdered,
-                                  Double overallPrice) {
+    public Boolean createDelivery(Delivery delivery) {
         try {
-            Delivery delivery = new Delivery(employeeAccepting,
-                    customerOrdering,
-                    deliveryAddress,
-                    deliveryStatus,
-                    itemsOrdered,
-                    overallPrice);
-
             deliveryRepository.save(delivery);
         } catch (Exception ex) {
             log.info("Failed creating delivery");
@@ -122,25 +107,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
-    public Boolean updateDelivery(Long id,
-                                  User employeeAccepting,
-                                  User customerOrdering,
-                                  String deliveryAddress,
-                                  DeliveryStatus deliveryStatus,
-                                  Map<WarehouseItem, Integer> itemsOrdered,
-                                  Double overallPrice,
-                                  Boolean isPaid) {
+    public Boolean updateDelivery(Delivery delivery) {
         try {
-            Delivery delivery = deliveryRepository.getOne(id);
-
-            delivery.setEmployeeAccepting(employeeAccepting);
-            delivery.setCustomerOrdering(customerOrdering);
-            delivery.setDeliveryAddress(deliveryAddress);
-            delivery.setDeliveryStatus(deliveryStatus);
-            delivery.setItemsOrdered(itemsOrdered);
-            delivery.setOverallPrice(overallPrice);
-            delivery.setPaid(isPaid);
-
             deliveryRepository.save(delivery);
         } catch (Exception ex) {
             log.info("Failed updating delivery");

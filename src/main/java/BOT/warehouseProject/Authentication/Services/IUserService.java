@@ -8,24 +8,9 @@ import java.util.List;
 public interface IUserService {
     public User authenticate(String username, String password);
 
-    public Boolean createUser(String username,
-                              String password,
-                              UserStatus userStatus,
-                              String firstName,
-                              String lastName,
-                              String address,
-                              String email,
-                              String phoneNumber);
+    public Boolean createUser(User user);
 
-    public Boolean updateUser(Long id,
-                              String username,
-                              String password,
-                              UserStatus userStatus,
-                              String firstName,
-                              String lastName,
-                              String address,
-                              String email,
-                              String phoneNumber);
+    public Boolean updateUser(User user);
 
     public User getUser(Long id);
 

@@ -21,46 +21,45 @@ public class UserServiceImplementation implements IUserService {
 
     @Override
     public User authenticate(String username, String password) {
-        return null;
+        return userRepository.findForAuthentication(username, password);
     }
 
     @Override
-    public Boolean createUser(String username,
-                              String password,
-                              UserStatus userStatus,
-                              String firstName,
-                              String lastName,
-                              String address,
-                              String email,
-                              String phoneNumber) {
-        return null;
+    public Boolean createUser(User user) {
+        try{
+            userRepository.save(user);
+        } catch (Exception ex){
+            log.info("Failed creating user");
+        }
+        log.info("Created new user");
+
+        return Boolean.TRUE;
     }
 
     @Override
-    public Boolean updateUser(Long id,
-                              String username,
-                              String password,
-                              UserStatus userStatus,
-                              String firstName,
-                              String lastName,
-                              String address,
-                              String email,
-                              String phoneNumber) {
-        return null;
+    public Boolean updateUser(User user) {
+        try{
+            userRepository.save(user);
+        } catch (Exception ex){
+            log.info("Failed updating user");
+        }
+        log.info("Updated user");
+
+        return Boolean.TRUE;
     }
 
     @Override
     public User getUser(Long id) {
-        return null;
+        return userRepository.getOne(id);
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
     @Override
     public List<User> getUsersByStatus(UserStatus userStatus) {
-        return null;
+        return userRepository.findByUserStatus(userStatus);
     }
 }

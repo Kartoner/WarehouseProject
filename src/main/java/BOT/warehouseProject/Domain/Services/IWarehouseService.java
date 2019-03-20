@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IWarehouseService {
-    public Boolean createWarehouseItem(String itemName,
-                                       ItemType itemType,
-                                       String itemDescription,
-                                       Double price);
+    public Boolean createWarehouseItem(WarehouseItem warehouseItem);
 
     public Boolean updateStock(Long id, Integer quantity);
 
@@ -25,21 +22,9 @@ public interface IWarehouseService {
 
     public List<WarehouseItem> getItemsByType(ItemType itemType);
 
-    public Boolean createDelivery(User employeeAccepting,
-                                  User customerOrdering,
-                                  String deliveryAddress,
-                                  DeliveryStatus deliveryStatus,
-                                  Map<WarehouseItem, Integer> itemsOrdered,
-                                  Double overallPrice);
+    public Boolean createDelivery(Delivery delivery);
 
-    public Boolean updateDelivery(Long id,
-                                  User employeeAccepting,
-                                  User customerOrdering,
-                                  String deliveryAddress,
-                                  DeliveryStatus deliveryStatus,
-                                  Map<WarehouseItem, Integer> itemsOrdered,
-                                  Double overallPrice,
-                                  Boolean isPaid);
+    public Boolean updateDelivery(Delivery delivery);
 
     public Boolean checkDelivery(Delivery delivery);
 
