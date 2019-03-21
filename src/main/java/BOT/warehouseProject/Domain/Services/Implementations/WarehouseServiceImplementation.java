@@ -59,12 +59,12 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
-    public Boolean updateItemInfo(Long id, ItemType itemType, String itemDescription) {
+    public Boolean updateItemInfo(WarehouseItem warehouseItem) {
         try {
-            WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
+            //WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
 
-            warehouseItem.setItemType(itemType);
-            warehouseItem.setItemDescription(itemDescription);
+            //warehouseItem.setItemType(itemType);
+            //warehouseItem.setItemDescription(itemDescription);
 
             warehouseItemRepository.save(warehouseItem);
         } catch (Exception ex) {

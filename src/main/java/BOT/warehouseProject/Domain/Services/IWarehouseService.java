@@ -12,7 +12,7 @@ public interface IWarehouseService {
 
     public Boolean updateStock(Long id, Integer quantity);
 
-    public Boolean updateItemInfo(Long id, ItemType itemType, String itemDescription);
+    public Boolean updateItemInfo(WarehouseItem warehouseItem);
 
     public Boolean deleteWarehouseItem(Long id);
 
