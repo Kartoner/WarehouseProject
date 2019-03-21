@@ -105,11 +105,11 @@ public class WebController
             ///todo dorobić loggera
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(items, HttpStatus.OK);
+        return new ResponseEntity<List<WarehouseItem>>(items, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user/{status}", method = RequestMethod.GET)
-    public ResponseEntity<List<UserStatus>> getUsersByStatus(@PathVariable("userStatus")UserStatus status)
+    public ResponseEntity<List<User>> getUsersByStatus(@PathVariable("userStatus")UserStatus status)
     {
         List<User> users = userService.getUsersByStatus(status);
         if(users.isEmpty())
@@ -117,11 +117,11 @@ public class WebController
             ///todo dorobic loggera
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<List<User>>(users, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/delivery/{status}", method = RequestMethod.GET)
-    public ResponseEntity<List<DeliveryStatus>> getDeliveriesByStatus(@PathVariable("deliveryStatus")DeliveryStatus status)
+    public ResponseEntity<List<Delivery>> getDeliveriesByStatus(@PathVariable("deliveryStatus")DeliveryStatus status)
     {
         List<Delivery> deliveries = warehouseService.getDeliveriesByStatus(status);
         if(deliveries.isEmpty())
@@ -129,11 +129,11 @@ public class WebController
             ///todo dorobic loggera
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(deliveries, HttpStatus.OK);
+        return new ResponseEntity<List<Delivery>>(deliveries, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/item/{status}", method = RequestMethod.GET)
-    public ResponseEntity<List<ItemType>> getItemByType(@PathVariable("itemType")ItemType status)
+    public ResponseEntity<List<WarehouseItem>> getItemByType(@PathVariable("itemType")ItemType status)
     {
         List<WarehouseItem> items = warehouseService.getItemsByType(status);
         if(items.isEmpty())
@@ -141,7 +141,7 @@ public class WebController
             ///todo dorobic loggera
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(items, HttpStatus.OK);
+        return new ResponseEntity<List<WarehouseItem>>(items, HttpStatus.OK);
     }
 
     // CREATE
