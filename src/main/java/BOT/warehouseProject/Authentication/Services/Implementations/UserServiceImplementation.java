@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service(value = "userService")
 public class UserServiceImplementation implements IUserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImplementation.class);

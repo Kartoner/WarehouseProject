@@ -15,16 +15,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service(value = "warehouseService")
 public class WarehouseServiceImplementation implements IWarehouseService {
 
     private static final Logger log = LoggerFactory.getLogger(WarehouseServiceImplementation.class);
 
-    @Autowired
-    private WarehouseItemRepository warehouseItemRepository;
+    private final WarehouseItemRepository warehouseItemRepository;
+    private final DeliveryRepository deliveryRepository;
 
     @Autowired
-    private DeliveryRepository deliveryRepository;
+    public WarehouseServiceImplementation(WarehouseItemRepository warehouseItemRepository,
+                                          DeliveryRepository deliveryRepository)
+    {
+        this.warehouseItemRepository = warehouseItemRepository;
+        this.deliveryRepository = deliveryRepository;
+    }
 
     @Override
     public Boolean createWarehouseItem(WarehouseItem warehouseItem) {
@@ -61,11 +66,6 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     @Override
     public Boolean updateItemInfo(WarehouseItem warehouseItem) {
         try {
-            //WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
-
-            //warehouseItem.setItemType(itemType);
-            //warehouseItem.setItemDescription(itemDescription);
-
             warehouseItemRepository.save(warehouseItem);
         } catch (Exception ex) {
             log.info("Failed updating item info");
@@ -109,6 +109,11 @@ public class WarehouseServiceImplementation implements IWarehouseService {
         try {
             if (checkDelivery(delivery)){
                 deliveryRepository.save(delivery);
+                Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
+
+                for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
+                    this.updateStock(entry.getKey().getId(), entry.getValue());
+                }
             } else {
                 log.info("Invalid delivery");
 

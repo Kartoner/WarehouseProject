@@ -11,6 +11,7 @@ import BOT.warehouseProject.Domain.Services.IWarehouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,8 @@ public class WebController
     private final IWarehouseService warehouseService;
 
     @Autowired
-    public WebController(IUserService userService, IWarehouseService warehouseService)
+    public WebController(@Qualifier("userService") IUserService userService,
+                         @Qualifier("warehouseService") IWarehouseService warehouseService)
     {
         this.userService = userService;
         this.warehouseService = warehouseService;
