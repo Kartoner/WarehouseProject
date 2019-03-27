@@ -1,6 +1,7 @@
 package BOT.warehouseProject.Domain.Entities;
 
 import BOT.warehouseProject.Domain.Enums.ItemType;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -9,13 +10,23 @@ import javax.persistence.*;
 public class WarehouseItem {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "item_name", unique = true, nullable = false)
     private String itemName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "item_type", nullable = false)
     private ItemType itemType;
+
+    @Column(name = "item_description")
     private String itemDescription;
+
+    @ColumnDefault("0")
     private Integer quantity;
+
+    @ColumnDefault("0.0")
     private Double price;
 
     protected WarehouseItem() {

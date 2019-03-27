@@ -2,26 +2,39 @@ package BOT.warehouseProject.Authentication.Entities;
 
 import BOT.warehouseProject.Authentication.Enums.UserStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "user")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status", nullable = false)
     private UserStatus userStatus;
+
+    @Column(name = "first_name", nullable = false)
     private String firstName;
+
+    @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(nullable = false)
     private String address;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
     protected User() {

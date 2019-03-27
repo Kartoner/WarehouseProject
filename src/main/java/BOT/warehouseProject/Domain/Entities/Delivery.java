@@ -11,7 +11,7 @@ import java.util.Map;
 public class Delivery {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -20,7 +20,11 @@ public class Delivery {
     @ManyToOne(cascade = CascadeType.ALL)
     private User customerOrdering;
 
+    @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_status", nullable = false)
     private DeliveryStatus deliveryStatus;
 
     @ElementCollection
@@ -29,7 +33,10 @@ public class Delivery {
     @MapKeyJoinColumn(name="warehouse_item_id")
     private Map<WarehouseItem, Integer> itemsOrdered;
 
+    @Column(name = "overall_price", nullable = false)
     private Double overallPrice;
+
+    @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
     protected Delivery() {
