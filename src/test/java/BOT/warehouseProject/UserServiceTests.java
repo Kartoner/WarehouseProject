@@ -5,6 +5,7 @@ import BOT.warehouseProject.Authentication.Enums.UserStatus;
 import BOT.warehouseProject.Authentication.Services.IUserService;
 import BOT.warehouseProject.Authentication.Services.Implementations.UserServiceImplementation;
 import BOT.warehouseProject.Database.Repositories.UserRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
@@ -40,6 +41,8 @@ public class UserServiceTests
     @Qualifier("userServiceTest")
     private IUserService userService;
 
+
+
     @Test
     public void givenUserService_WhenGettingAllUsers_ThenCheckUserListSize()
     {
@@ -66,6 +69,44 @@ public class UserServiceTests
 
     }
 
+    @Test
+    public void givenUserService_WhenDeletingOneUserById_ThenCheckUserListSizeDecremented()
+    {
+        ///given
+        when(userRepositoryMock.findAll()).thenReturn(this.givenAllUsers());
+
+        List<User> allUsers = userRepositoryMock.findAll();
+        Integer userCountBeforeDelete = allUsers.size();
+
+        Long testId = allUsers.get(0).getId();
+
+        //when
+        userRepositoryMock.deleteById(testId);
+
+        //then
+        Integer userCountAfterDelete = userRepositoryMock.findAll().size();
+        assert(userCountBeforeDelete.intValue() == userCountAfterDelete.intValue());
+    }
+
+    @Test
+    public void givenUserService_WhenDeletingOneUserByUser_ThenCheckUserListSizeDecremented()
+    {
+        ///given
+
+
+        List<User> allUsers = userRepositoryMock.findAll();
+        Integer userCountBeforeDelete = allUsers.size();
+
+        User userToDelete=userRepositoryMock.findAll().get(0);
+
+        //when
+        userRepositoryMock.delete(userToDelete);
+
+        //then
+        Integer userCountAfterDelete = userRepositoryMock.findAll().size();
+        assert(userCountBeforeDelete.intValue() == userCountAfterDelete.intValue());
+    }
+
     private List<User> givenAllUsers(){
         List <User> usersList = new ArrayList<>();
 
@@ -78,7 +119,7 @@ public class UserServiceTests
         return usersList;
     }
 
-    private User givenCustomerUser(){
+    public User givenCustomerUser(){
         String customerName = "customer";
         String customerSecondName = "customer secondName";
         String customerPassword = "customer password";
@@ -95,7 +136,7 @@ public class UserServiceTests
         return customer;
     }
 
-    private User givenEmployeeUser(){
+    public User givenEmployeeUser(){
         String employeeName = "employee";
         String employeeSecondName = "employee secondName";
         String employeePassword = "employee  password";
