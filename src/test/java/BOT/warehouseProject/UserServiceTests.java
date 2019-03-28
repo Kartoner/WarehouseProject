@@ -119,7 +119,7 @@ public class UserServiceTests
         return usersList;
     }
 
-    private User givenCustomerUser(){
+    public User givenCustomerUser(){
         String customerName = "customer";
         String customerSecondName = "customer secondName";
         String customerPassword = "customer password";
@@ -136,7 +136,7 @@ public class UserServiceTests
         return customer;
     }
 
-    private User givenEmployeeUser(){
+    public User givenEmployeeUser(){
         String employeeName = "employee";
         String employeeSecondName = "employee secondName";
         String employeePassword = "employee  password";
