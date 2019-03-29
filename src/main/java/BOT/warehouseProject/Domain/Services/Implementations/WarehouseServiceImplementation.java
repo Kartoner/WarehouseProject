@@ -1,5 +1,6 @@
 package BOT.warehouseProject.Domain.Services.Implementations;
 
+import BOT.warehouseProject.Authentication.Entities.User;
 import BOT.warehouseProject.Database.Repositories.DeliveryRepository;
 import BOT.warehouseProject.Database.Repositories.WarehouseItemRepository;
 import BOT.warehouseProject.Domain.Entities.Delivery;
@@ -42,24 +43,6 @@ public class WarehouseServiceImplementation implements IWarehouseService {
             return Boolean.FALSE;
         }
         log.info("Created new item");
-
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Boolean updateStock(Long id, Integer quantity) {
-        try {
-            WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
-
-            warehouseItem.setQuantity(quantity);
-
-            warehouseItemRepository.save(warehouseItem);
-        } catch (Exception ex) {
-            log.info("Failed updating item");
-
-            return Boolean.FALSE;
-        }
-        log.info("Updated item");
 
         return Boolean.TRUE;
     }
@@ -120,7 +103,7 @@ public class WarehouseServiceImplementation implements IWarehouseService {
                 Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
 
                 for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-                    this.updateStock(entry.getKey().getItemId(), entry.getValue());
+                    this.updateStock(entry.getKey().getItemId(), entry.getKey().getQuantity() - entry.getValue());
                 }
             } else {
                 log.info("Invalid delivery");
@@ -182,14 +165,31 @@ public class WarehouseServiceImplementation implements IWarehouseService {
 
     private Boolean checkDelivery(Delivery delivery) {
         Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
-        WarehouseItem tempItem;
+        Optional<WarehouseItem> tempItem;
 
         for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-            tempItem = warehouseItemRepository.getOne(entry.getKey().getItemId());
-            if (tempItem.getQuantity() - entry.getValue() < 0){
+            tempItem = warehouseItemRepository.findByItemName(entry.getKey().getItemName());
+            if (tempItem.get().getQuantity() - entry.getValue() < 0){
                 return Boolean.FALSE;
             }
         }
+
+        return Boolean.TRUE;
+    }
+
+    private Boolean updateStock(Long id, Integer quantity) {
+        try {
+            WarehouseItem warehouseItem = warehouseItemRepository.getOne(id);
+
+            warehouseItem.setQuantity(quantity);
+
+            warehouseItemRepository.save(warehouseItem);
+        } catch (Exception ex) {
+            log.info("Failed updating item");
+
+            return Boolean.FALSE;
+        }
+        log.info("Updated item");
 
         return Boolean.TRUE;
     }

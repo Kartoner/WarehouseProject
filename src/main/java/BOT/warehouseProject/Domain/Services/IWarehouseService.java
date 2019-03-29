@@ -11,8 +11,6 @@ import java.util.Optional;
 public interface IWarehouseService {
     public Boolean createWarehouseItem(WarehouseItem warehouseItem);
 
-    public Boolean updateStock(Long id, Integer quantity);
-
     public Boolean updateItemInfo(WarehouseItem warehouseItem);
 
     public Boolean deleteWarehouseItem(Long id);

@@ -19,11 +19,11 @@ public class Delivery {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(keyUsing = UserDeserializer.class)
     private User employeeAccepting;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(keyUsing = UserDeserializer.class)
     private User customerOrdering;
 
