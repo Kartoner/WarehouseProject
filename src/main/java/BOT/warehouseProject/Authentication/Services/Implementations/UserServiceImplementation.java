@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service(value = "userService")
 public class UserServiceImplementation implements IUserService {
@@ -20,7 +21,7 @@ public class UserServiceImplementation implements IUserService {
     private UserRepository userRepository;
 
     @Override
-    public User authenticate(String username, String password) {
+    public Optional<User> authenticate(String username, String password) {
         return userRepository.findForAuthentication(username, password);
     }
 
@@ -30,6 +31,7 @@ public class UserServiceImplementation implements IUserService {
             userRepository.save(user);
         } catch (Exception ex){
             log.info("Failed creating user");
+            return Boolean.FALSE;
         }
         log.info("Created new user");
 
@@ -42,6 +44,7 @@ public class UserServiceImplementation implements IUserService {
             userRepository.save(user);
         } catch (Exception ex){
             log.info("Failed updating user");
+            return Boolean.FALSE;
         }
         log.info("Updated user");
 
@@ -54,6 +57,7 @@ public class UserServiceImplementation implements IUserService {
             userRepository.deleteById(id);
         } catch (Exception ex){
             log.info("Failed deleting user");
+            return Boolean.FALSE;
         }
         log.info("Deleted user");
 
@@ -61,9 +65,7 @@ public class UserServiceImplementation implements IUserService {
     }
 
     @Override
-    public User getUser(Long id) {
-        return userRepository.getOne(id);
-    }
+    public Optional<User> getUser(Long id) { return userRepository.findById(id);}
 
     @Override
     public List<User> getAllUsers() {
@@ -74,4 +76,7 @@ public class UserServiceImplementation implements IUserService {
     public List<User> getUsersByStatus(UserStatus userStatus) {
         return userRepository.findByUserStatus(userStatus);
     }
+
+    @Override
+    public Optional<User> getUserByUsername(String username) { return userRepository.findByUsername(username); }
 }

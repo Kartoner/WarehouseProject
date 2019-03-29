@@ -1,12 +1,15 @@
 package BOT.warehouseProject.Domain.Entities;
 
 import BOT.warehouseProject.Domain.Enums.ItemType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "warehouse_item")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class WarehouseItem {
 
     @Id
@@ -29,25 +32,36 @@ public class WarehouseItem {
     @ColumnDefault("0.0")
     private Double price;
 
-    protected WarehouseItem() {
+    public WarehouseItem() {
+    }
+
+    public WarehouseItem(String itemString){
+        String[] itemParams = itemString.split(" @@ ");
+
+        this.itemName = itemParams[0].trim();
+        this.itemType = ItemType.valueOf(itemParams[1].trim());
+        this.itemDescription = itemParams[2].trim();
+        this.quantity = Integer.valueOf(itemParams[3].trim());
+        this.price = Double.valueOf(itemParams[4].trim());
     }
 
     public WarehouseItem(String itemName,
                          ItemType itemType,
                          String itemDescription,
+                         Integer quantity,
                          Double price) {
         this.itemName = itemName;
         this.itemType = itemType;
         this.itemDescription = itemDescription;
-        this.quantity = 0;
+        this.quantity = quantity;
         this.price = price;
     }
 
-    public Long getId() {
+    public Long getItemId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setItemId(Long id) {
         this.id = id;
     }
 
@@ -92,14 +106,8 @@ public class WarehouseItem {
     }
 
     @Override
+    @JsonValue
     public String toString() {
-        return "WarehouseItem{" +
-                "id=" + id +
-                ", itemName='" + itemName + '\'' +
-                ", itemType=" + itemType +
-                ", itemDescription='" + itemDescription + '\'' +
-                ", quantity=" + quantity +
-                ", price=" + price +
-                '}';
+        return itemName + " @@ " + itemType + " @@ " + itemDescription + " @@ " + quantity + " @@ " + price;
     }
 }

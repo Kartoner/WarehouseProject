@@ -3,6 +3,7 @@ package BOT.warehouseProject.Website.Controllers;
 import BOT.warehouseProject.Authentication.Entities.User;
 import BOT.warehouseProject.Authentication.Enums.UserStatus;
 import BOT.warehouseProject.Authentication.Services.IUserService;
+import BOT.warehouseProject.Authentication.Values.AuthContainer;
 import BOT.warehouseProject.Domain.Entities.Delivery;
 import BOT.warehouseProject.Domain.Entities.WarehouseItem;
 import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
@@ -12,15 +13,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class WebController
 {
 
@@ -37,187 +41,311 @@ public class WebController
         this.warehouseService = warehouseService;
     }
 
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUser(@PathVariable("id")long id)
-    {
-        User user = userService.getUser(id);
-        if(user == null)
-        {
-            ///todo dorobić loggera
+    @RequestMapping(value = "/user/login", method = RequestMethod.GET)
+    public ResponseEntity<?> authenticate(@RequestBody AuthContainer authContainer){
+        Optional<User> authUser = userService.authenticate(authContainer.getUsername(), authContainer.getPassword());
+
+        if(authUser.isPresent()){
+            User user = authUser.get();
+
+            log.info("User authenticated");
+            return new ResponseEntity(user, HttpStatus.OK);
+        } else {
+            log.error("Invalid username or password");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUser(@PathVariable("id")long id)
+    {
+        Optional<User> user = userService.getUser(id);
+
+        if(user.isEmpty())
+        {
+            log.error("User with ID = " + id + " not found");
+            return new ResponseEntity(user, HttpStatus.NOT_FOUND);
+        }
+
+        log.info("User with ID = " + id + " found");
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/delivery/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Delivery> getDelivery(@PathVariable("id")long id)
+    public ResponseEntity<?> getDelivery(@PathVariable("id")long id)
     {
-        Delivery delivery = warehouseService.getDelivery(id);
-        if(delivery == null)
+        Optional<Delivery> delivery = warehouseService.getDelivery(id);
+
+        if(delivery.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("Delivery with ID = " + id + " not found");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
+        log.info("Delivery with ID = " + id + " found");
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/item/{id}", method = RequestMethod.GET)
-    public ResponseEntity<WarehouseItem> getWarehouseItem(@PathVariable("id")long id)
+    public ResponseEntity<?> getWarehouseItem(@PathVariable("id")long id)
     {
-        WarehouseItem warehouseItem = warehouseService.getWarehouseItem(id);
-        if(warehouseItem == null)
+        Optional<WarehouseItem> warehouseItem = warehouseService.getWarehouseItem(id);
+        if(warehouseItem.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("Item with ID = " + id + " not found");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
+        log.info("Item with ID = " + id + " found");
         return new ResponseEntity<>(warehouseItem, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public ResponseEntity<List<User>> getAllUsers()
+    public ResponseEntity<?> getAllUsers()
     {
         List<User> users = userService.getAllUsers();
+
         if(users.isEmpty())
         {
-            ///todo dorobić loggera
+            log.info("List of users is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
+
+        log.info("Retrieved " + users.size() + " users");
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
-    public ResponseEntity<List<Delivery>> getAllDeliveries()
+    public ResponseEntity<?> getAllDeliveries()
     {
         List<Delivery> deliveries = warehouseService.getAllDeliveries();
+
         if(deliveries.isEmpty())
         {
-            ///todo dorobić loggera
+            log.info("List of deliveries is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
+
+        log.info("Retrieved " + deliveries.size() + " deliveries");
         return new ResponseEntity<>(deliveries, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/item", method = RequestMethod.GET)
-    public ResponseEntity<List<WarehouseItem>> getAllItems()
+    public ResponseEntity<?> getAllItems()
     {
         List<WarehouseItem> items = warehouseService.getAllItems();
+
         if(items.isEmpty())
         {
-            ///todo dorobić loggera
+            log.info("List of items is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<List<WarehouseItem>>(items, HttpStatus.OK);
+
+        log.info("Retrieved " + items.size() + " items");
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/user/{status}", method = RequestMethod.GET)
-    public ResponseEntity<List<User>> getUsersByStatus(@PathVariable("userStatus")UserStatus status)
+    @RequestMapping(value = "/user/status/{status}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUsersByStatus(@PathVariable("status")String status)
     {
-        List<User> users = userService.getUsersByStatus(status);
+        UserStatus userStatus = UserStatus.valueOf(status);
+
+        List<User> users = userService.getUsersByStatus(userStatus);
+
         if(users.isEmpty())
         {
-            ///todo dorobic loggera
+            log.info("List of users with " + userStatus.toString() + " status is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+
+        log.info("Retrieved " + users.size() + " users with " + userStatus.toString() + " status");
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/delivery/{status}", method = RequestMethod.GET)
-    public ResponseEntity<List<Delivery>> getDeliveriesByStatus(@PathVariable("deliveryStatus")DeliveryStatus status)
+    @RequestMapping(value = "/delivery/status/{status}", method = RequestMethod.GET)
+    public ResponseEntity<?> getDeliveriesByStatus(@PathVariable("status")String status)
     {
-        List<Delivery> deliveries = warehouseService.getDeliveriesByStatus(status);
+        DeliveryStatus deliveryStatus = DeliveryStatus.valueOf(status);
+
+        List<Delivery> deliveries = warehouseService.getDeliveriesByStatus(deliveryStatus);
+
         if(deliveries.isEmpty())
         {
-            ///todo dorobic loggera
+            log.info("List of deliveries with " + deliveryStatus.toString() + " status is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<List<Delivery>>(deliveries, HttpStatus.OK);
+
+        log.info("Retrieved " + deliveries.size() + " deliveries with " + deliveryStatus.toString() + " status");
+        return new ResponseEntity<>(deliveries, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/item/{status}", method = RequestMethod.GET)
-    public ResponseEntity<List<WarehouseItem>> getItemByType(@PathVariable("itemType")ItemType status)
+    @RequestMapping(value = "/item/type/{type}", method = RequestMethod.GET)
+    public ResponseEntity<?> getItemByType(@PathVariable("type")String type)
     {
-        List<WarehouseItem> items = warehouseService.getItemsByType(status);
+        ItemType itemType = ItemType.valueOf(type);
+
+        List<WarehouseItem> items = warehouseService.getItemsByType(itemType);
+
         if(items.isEmpty())
         {
-            ///todo dorobic loggera
+            log.info("List of items of type " + itemType.toString() + " is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<List<WarehouseItem>>(items, HttpStatus.OK);
+
+        log.info("Retrieved " + items.size() + " items of type " + itemType.toString());
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
     // CREATE
     @RequestMapping(value = "/user/", method = RequestMethod.POST)
-    public ResponseEntity<User> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder)
+    public ResponseEntity<?> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder)
     {
-        userService.createUser(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        Optional<User> existingUser = userService.getUserByUsername(user.getUsername());
+
+        if(existingUser.isPresent()){
+            log.error("User already exists");
+            return new ResponseEntity(HttpStatus.CONFLICT);
+        }
+
+        Boolean isCreated = userService.createUser(user);
+
+        if(isCreated){
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(ucBuilder.path("/api/user/{id}").buildAndExpand(user.getUserId()).toUri());
+
+            log.info("User created successfully");
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        } else {
+            log.error("User not created");
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
-    @RequestMapping(value = "/delivery/", method = RequestMethod.POST)
-    public ResponseEntity<Delivery> createDelivery(@RequestBody Delivery delivery, UriComponentsBuilder ucBuilder)
+    @RequestMapping(value = "/delivery/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> createDelivery(@RequestBody Delivery delivery, UriComponentsBuilder ucBuilder)
     {
-        warehouseService.createDelivery(delivery);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        Boolean isCreated = warehouseService.createDelivery(delivery);
+
+        if(isCreated){
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(ucBuilder.path("/api/delivery/{id}").buildAndExpand(delivery.getDeliveryId()).toUri());
+
+            log.info("Delivery created successfully");
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        } else {
+            log.error("Delivery not created");
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/item/", method = RequestMethod.POST)
-    public ResponseEntity<WarehouseItem> createItem(@RequestBody WarehouseItem item, UriComponentsBuilder ucBuilder)
+    public ResponseEntity<?> createItem(@RequestBody WarehouseItem item, UriComponentsBuilder ucBuilder)
     {
-        warehouseService.createWarehouseItem(item);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        Optional<WarehouseItem> existingItem = warehouseService.getItemByName(item.getItemName());
+
+        if(existingItem.isPresent()){
+            log.error("Item already exists");
+            return new ResponseEntity(HttpStatus.CONFLICT);
+        }
+
+        Boolean isCreated = warehouseService.createWarehouseItem(item);
+
+        if(isCreated){
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(ucBuilder.path("/api/item/{id}").buildAndExpand(item.getItemId()).toUri());
+
+            log.info("Item created successfully");
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        } else {
+            log.error("Item not created");
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     //DELETE
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<User> deleteUser(@PathVariable("id") long id )
+    public ResponseEntity<?> deleteUser(@PathVariable("id") long id )
     {
-        User user = userService.getUser(id);
-        if(user == null)
+        Optional<User> user = userService.getUser(id);
+
+        if(user.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("User with given ID doesn't exist");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        Boolean isDeleted = userService.deleteUser(id);
+
+        if(isDeleted){
+            log.info("User deleted successfully");
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            log.error("User not deleted");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/delivery/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Delivery> deleteDelivery(@PathVariable("id") long id )
+    public ResponseEntity<?> deleteDelivery(@PathVariable("id") long id )
     {
-        Delivery delivery = warehouseService.getDelivery(id);
-        if(delivery == null)
+        Optional<Delivery> delivery = warehouseService.getDelivery(id);
+
+        if(delivery.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("Delivery with given ID doesn't exist");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        warehouseService.deleteDelivery(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        Boolean isDeleted = warehouseService.deleteDelivery(id);
+
+        if(isDeleted){
+            log.info("Delivery deleted successfully");
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            log.error("Delivery not deleted");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @RequestMapping(value = "/item/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<WarehouseItem> deleteItem(@PathVariable("id") long id )
+    public ResponseEntity<?> deleteItem(@PathVariable("id") long id )
     {
-        WarehouseItem item = warehouseService.getWarehouseItem(id);
-        if(item == null)
+        Optional<WarehouseItem> item = warehouseService.getWarehouseItem(id);
+
+        if(item.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("Item with given ID doesn't exist");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        warehouseService.deleteWarehouseItem(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        Boolean isDeleted = warehouseService.deleteWarehouseItem(id);
+
+        if(isDeleted){
+            log.info("Item deleted successfully");
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            log.error("Item not deleted");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     //UPDATE
     @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<User> updateUser(@PathVariable("id") long id, @RequestBody User user)
+    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user)
     {
-        User currentUser = userService.getUser(id);
-        if(currentUser == null)
+        Optional<User> searchedUser = userService.getUser(id);
+
+        if(searchedUser.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("User with given ID doesn't exist");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
+        User currentUser = searchedUser.get();
 
         currentUser.setUsername(user.getUsername());
         currentUser.setPassword(user.getPassword());
@@ -228,19 +356,28 @@ public class WebController
         currentUser.setEmail(user.getEmail());
         currentUser.setPhoneNumber(user.getPhoneNumber());
 
-        userService.updateUser(currentUser);
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        Boolean isUpdated = userService.updateUser(currentUser);
+
+        if(isUpdated){
+            log.info("User updated successfully");
+            return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        } else {
+            log.error("User not updated");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/delivery/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Delivery> updateDelivery(@PathVariable("id") long id, @RequestBody Delivery delivery)
+    public ResponseEntity<?> updateDelivery(@PathVariable("id") long id, @RequestBody Delivery delivery)
     {
-        Delivery currentDelivery = warehouseService.getDelivery(id);
-        if(currentDelivery == null)
+        Optional<Delivery> searchedDelivery = warehouseService.getDelivery(id);
+
+        if(searchedDelivery.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("Delivery with given ID doesn't exist");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+        Delivery currentDelivery = searchedDelivery.get();
 
         currentDelivery.setEmployeeAccepting(delivery.getEmployeeAccepting());
         currentDelivery.setCustomerOrdering(delivery.getCustomerOrdering());
@@ -248,27 +385,45 @@ public class WebController
         currentDelivery.setDeliveryStatus(delivery.getDeliveryStatus());
         currentDelivery.setItemsOrdered(delivery.getItemsOrdered());
         currentDelivery.setOverallPrice(delivery.getOverallPrice());
+        currentDelivery.setPaid(delivery.getPaid());
 
-        warehouseService.updateDelivery(currentDelivery);
-        return new ResponseEntity<>(currentDelivery, HttpStatus.OK);
+        Boolean isUpdated = warehouseService.updateDelivery(currentDelivery);
+
+        if(isUpdated){
+            log.info("Delivery updated successfully");
+            return new ResponseEntity<>(currentDelivery, HttpStatus.OK);
+        } else {
+            log.error("Delivery not updated");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/item/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<WarehouseItem> updateItem(@PathVariable("id") long id, @RequestBody WarehouseItem item)
+    public ResponseEntity<?> updateItem(@PathVariable("id") long id, @RequestBody WarehouseItem item)
     {
-        WarehouseItem currentItem = warehouseService.getWarehouseItem(id);
-        if(currentItem == null)
+        Optional<WarehouseItem> searchedItem = warehouseService.getWarehouseItem(id);
+
+        if(searchedItem.isEmpty())
         {
-            ///todo dorobić loggera
+            log.error("Item with given ID doesn't exist");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
+        WarehouseItem currentItem = searchedItem.get();
 
         currentItem.setItemName(item.getItemName());
         currentItem.setItemType(item.getItemType());
         currentItem.setItemDescription(item.getItemDescription());
         currentItem.setPrice(item.getPrice());
 
-        warehouseService.updateItemInfo(currentItem);
-        return new ResponseEntity<>(currentItem, HttpStatus.OK);
+        Boolean isUpdated = warehouseService.updateItemInfo(currentItem);
+
+        if(isUpdated){
+            log.info("Item updated successfully");
+            return new ResponseEntity<>(currentItem, HttpStatus.OK);
+        } else {
+            log.error("Item not updated");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

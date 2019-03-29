@@ -1,23 +1,30 @@
 package BOT.warehouseProject.Domain.Entities;
 
 import BOT.warehouseProject.Authentication.Entities.User;
+import BOT.warehouseProject.Authentication.Serialization.UserDeserializer;
 import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
+import BOT.warehouseProject.Domain.Serialization.WarehouseItemDeserializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.util.Map;
 
 @Entity
 @Table(name = "delivery")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Delivery {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JsonDeserialize(keyUsing = UserDeserializer.class)
     private User employeeAccepting;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JsonDeserialize(keyUsing = UserDeserializer.class)
     private User customerOrdering;
 
     @Column(name = "delivery_address", nullable = false)
@@ -31,6 +38,7 @@ public class Delivery {
     @CollectionTable(name="delivery_item",
             joinColumns={@JoinColumn(name="delivery_id")})
     @MapKeyJoinColumn(name="warehouse_item_id")
+    @JsonDeserialize(keyUsing = WarehouseItemDeserializer.class)
     private Map<WarehouseItem, Integer> itemsOrdered;
 
     @Column(name = "overall_price", nullable = false)
@@ -39,7 +47,7 @@ public class Delivery {
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
-    protected Delivery() {
+    public Delivery() {
     }
 
     public Delivery(User employeeAccepting,
@@ -47,21 +55,22 @@ public class Delivery {
                     String deliveryAddress,
                     DeliveryStatus deliveryStatus,
                     Map<WarehouseItem, Integer> itemsOrdered,
-                    Double overallPrice) {
+                    Double overallPrice,
+                    Boolean isPaid) {
         this.employeeAccepting = employeeAccepting;
         this.customerOrdering = customerOrdering;
         this.deliveryAddress = deliveryAddress;
         this.deliveryStatus = deliveryStatus;
         this.itemsOrdered = itemsOrdered;
         this.overallPrice = overallPrice;
-        this.isPaid = Boolean.FALSE;
+        this.isPaid = isPaid;
     }
 
-    public Long getId() {
+    public Long getDeliveryId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setDeliveryId(Long id) {
         this.id = id;
     }
 

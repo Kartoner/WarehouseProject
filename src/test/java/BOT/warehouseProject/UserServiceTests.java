@@ -62,7 +62,7 @@ public class UserServiceTests
         ///When
         when(userRepositoryMock.getOne(argThat(aLong -> aLong.equals(testId))))
                 .thenAnswer((Answer) invocation -> testCustomer);
-        User customer = this.userService.getUser(testId);
+        User customer = this.userService.getUser(testId).get();
 
         ///Then
         assert(customer == testCustomer);
@@ -78,7 +78,7 @@ public class UserServiceTests
         List<User> allUsers = userRepositoryMock.findAll();
         Integer userCountBeforeDelete = allUsers.size();
 
-        Long testId = allUsers.get(0).getId();
+        Long testId = allUsers.get(0).getUserId();
 
         //when
         userRepositoryMock.deleteById(testId);

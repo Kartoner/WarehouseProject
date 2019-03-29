@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service(value = "warehouseService")
 public class WarehouseServiceImplementation implements IWarehouseService {
@@ -83,6 +84,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
             warehouseItemRepository.deleteById(id);
         } catch (Exception ex){
             log.info("Failed deleting item");
+
+            return Boolean.FALSE;
         }
         log.info("Deleted item");
 
@@ -90,8 +93,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
-    public WarehouseItem getWarehouseItem(Long id) {
-        return warehouseItemRepository.getOne(id);
+    public Optional<WarehouseItem> getWarehouseItem(Long id) {
+        return warehouseItemRepository.findById(id);
     }
 
     @Override
@@ -105,6 +108,11 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
+    public Optional<WarehouseItem> getItemByName(String itemName){
+        return warehouseItemRepository.findByItemName(itemName);
+    }
+
+    @Override
     public Boolean createDelivery(Delivery delivery) {
         try {
             if (checkDelivery(delivery)){
@@ -112,7 +120,7 @@ public class WarehouseServiceImplementation implements IWarehouseService {
                 Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
 
                 for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-                    this.updateStock(entry.getKey().getId(), entry.getValue());
+                    this.updateStock(entry.getKey().getItemId(), entry.getValue());
                 }
             } else {
                 log.info("Invalid delivery");
@@ -149,6 +157,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
             deliveryRepository.deleteById(id);
         } catch (Exception ex){
             log.info("Failed deleting delivery");
+
+            return Boolean.FALSE;
         }
         log.info("Deleted delivery");
 
@@ -156,8 +166,8 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     @Override
-    public Delivery getDelivery(Long id) {
-        return deliveryRepository.getOne(id);
+    public Optional<Delivery> getDelivery(Long id) {
+        return deliveryRepository.findById(id);
     }
 
     @Override
@@ -175,7 +185,7 @@ public class WarehouseServiceImplementation implements IWarehouseService {
         WarehouseItem tempItem;
 
         for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-            tempItem = warehouseItemRepository.getOne(entry.getKey().getId());
+            tempItem = warehouseItemRepository.getOne(entry.getKey().getItemId());
             if (tempItem.getQuantity() - entry.getValue() < 0){
                 return Boolean.FALSE;
             }

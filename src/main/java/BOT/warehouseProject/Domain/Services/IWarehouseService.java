@@ -6,6 +6,7 @@ import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
 import BOT.warehouseProject.Domain.Enums.ItemType;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IWarehouseService {
     public Boolean createWarehouseItem(WarehouseItem warehouseItem);
@@ -16,11 +17,13 @@ public interface IWarehouseService {
 
     public Boolean deleteWarehouseItem(Long id);
 
-    public WarehouseItem getWarehouseItem(Long id);
+    public Optional<WarehouseItem> getWarehouseItem(Long id);
 
     public List<WarehouseItem> getAllItems();
 
     public List<WarehouseItem> getItemsByType(ItemType itemType);
+
+    public Optional<WarehouseItem> getItemByName(String itemName);
 
     public Boolean createDelivery(Delivery delivery);
 
@@ -28,7 +31,7 @@ public interface IWarehouseService {
 
     public Boolean deleteDelivery(Long id);
 
-    public Delivery getDelivery(Long id);
+    public Optional<Delivery> getDelivery(Long id);
 
     public List<Delivery> getAllDeliveries();
 

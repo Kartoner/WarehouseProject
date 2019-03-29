@@ -1,11 +1,15 @@
 package BOT.warehouseProject.Authentication.Entities;
 
 import BOT.warehouseProject.Authentication.Enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
@@ -16,10 +20,12 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserStatus userStatus;
 
     @Column(name = "first_name", nullable = false)
@@ -37,7 +43,20 @@ public class User {
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
-    protected User() {
+    public User() {
+    }
+
+    public User(String userString){
+        String[] userParams = userString.split(" @@ ");
+
+        this.username = userParams[0].trim();
+        this.password = userParams[1].trim();
+        this.userStatus = UserStatus.valueOf(userParams[2].trim());
+        this.firstName = userParams[3].trim();
+        this.lastName = userParams[4].trim();
+        this.address = userParams[5].trim();
+        this.email = userParams[6].trim();
+        this.phoneNumber = userParams[7].trim();
     }
 
     public User(String username,
@@ -58,11 +77,11 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getId() {
+    public Long getUserId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setUserId(Long id) {
         this.id = id;
     }
 
@@ -131,17 +150,15 @@ public class User {
     }
 
     @Override
+    @JsonValue
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", userStatus=" + userStatus +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
+        return  username +
+                " @@ " + password +
+                " @@ " + userStatus +
+                " @@ " + firstName +
+                " @@ " + lastName +
+                " @@ " + address +
+                " @@ " + email +
+                " @@ " + phoneNumber;
     }
 }

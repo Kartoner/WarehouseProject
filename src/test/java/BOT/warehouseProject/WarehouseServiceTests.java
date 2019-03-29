@@ -2,6 +2,7 @@ package BOT.warehouseProject;
 
 import BOT.warehouseProject.Authentication.Entities.User;
 import BOT.warehouseProject.Authentication.Enums.UserStatus;
+import BOT.warehouseProject.Database.Repositories.DeliveryRepository;
 import BOT.warehouseProject.Database.Repositories.WarehouseItemRepository;
 import BOT.warehouseProject.Domain.Entities.Delivery;
 import BOT.warehouseProject.Domain.Entities.WarehouseItem;
@@ -11,6 +12,7 @@ import BOT.warehouseProject.Domain.Services.IWarehouseService;
 import BOT.warehouseProject.Domain.Services.Implementations.WarehouseServiceImplementation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,10 +39,12 @@ public class WarehouseServiceTests
         @Bean
         IWarehouseService warehouseServiceTest()
         {
-            ///nie do końca wiem jak tutaj wstrzyknąc te obiekty
-            return new WarehouseServiceImplementation(null, null);
+            return Mockito.mock(IWarehouseService.class);
         }
     }
+
+    @MockBean
+    private DeliveryRepository deliveryRepositoryMock;
 
     @MockBean
     private WarehouseItemRepository warehouseItemRepositoryMock;
@@ -71,7 +75,7 @@ public class WarehouseServiceTests
         when(warehouseItemRepositoryMock.getOne(argThat(aLong -> aLong.equals(testId))))
                 .thenAnswer((Answer)invocation ->testItem);
 
-        WarehouseItem item = this.warehouseService.getWarehouseItem(testId);
+        WarehouseItem item = this.warehouseService.getWarehouseItem(testId).get();
 
         ///Then
         assert(testItem.getItemName().equals(item.getItemName()));
@@ -120,7 +124,7 @@ public class WarehouseServiceTests
         List<WarehouseItem> allItems = warehouseItemRepositoryMock.findAll();
         Integer itemListBeforeDeleting = warehouseItemRepositoryMock.findAll().size();
 
-        Long itemIndex = allItems.get(0).getId();
+        Long itemIndex = allItems.get(0).getItemId();
 
         ///When
         warehouseItemRepositoryMock.deleteById(itemIndex);
@@ -159,9 +163,10 @@ public class WarehouseServiceTests
         String itemName = "Sport stuff";
         ItemType itemType = ItemType.Sport;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 0.77;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
 
     private WarehouseItem gardeningItem()
@@ -169,18 +174,20 @@ public class WarehouseServiceTests
         String itemName = "Gardening stuff";
         ItemType itemType = ItemType.Gardening;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 6.66;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
     private WarehouseItem furinitureItem()
     {
         String itemName = "Furniture";
         ItemType itemType = ItemType.Furniture;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 555.55;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
 
 
@@ -189,9 +196,10 @@ public class WarehouseServiceTests
         String itemName = "food";
         ItemType itemType = ItemType.Food;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 44.44;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
 
 
@@ -199,27 +207,30 @@ public class WarehouseServiceTests
         String itemName = "electronic stuff";
         ItemType itemType = ItemType.Electronics;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 133.13;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
 
     private WarehouseItem clotheItem(){
         String itemName = "clothes";
         ItemType itemType = ItemType.Clothes;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 122.12;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
 
     private WarehouseItem cleaningItem(){
         String itemName = "cleaning stuff";
         ItemType itemType = ItemType.Cleaning;
         String itemDescription = "item  password";
+        Integer quantity = 0;
         Double itemPrice = 111.11;
 
-        return new WarehouseItem(itemName,itemType,itemDescription,itemPrice);
+        return new WarehouseItem(itemName,itemType,itemDescription,quantity,itemPrice);
     }
 
     private Delivery del1()
@@ -230,8 +241,10 @@ public class WarehouseServiceTests
         Delivery d1 = new Delivery(serviceTests.givenEmployeeUser(),
                 serviceTests.givenCustomerUser(),
                 "address",
-                DeliveryStatus.Accepted,this.orderedProduct1(),
-                this.countOveralPriceFor(null));
+                DeliveryStatus.Accepted,
+                orderedProduct1(),
+                this.countOveralPriceFor(null),
+                Boolean.FALSE);
         return d1;
     }
 
