@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
@@ -41,8 +42,6 @@ public class UserServiceTests
     @Qualifier("userServiceTest")
     private IUserService userService;
 
-
-
     @Test
     public void givenUserService_WhenGettingAllUsers_ThenCheckUserListSize()
     {
@@ -57,54 +56,16 @@ public class UserServiceTests
     {
         ///Given
         Long testId = 0L;
-        User testCustomer = this.givenCustomerUser();
+        Optional<User> testCustomer = Optional.of(this.givenCustomerUser());
 
         ///When
-        when(userRepositoryMock.getOne(argThat(aLong -> aLong.equals(testId))))
+        when(userRepositoryMock.findById(argThat(aLong -> aLong.equals(testId))))
                 .thenAnswer((Answer) invocation -> testCustomer);
         User customer = this.userService.getUser(testId).get();
 
         ///Then
-        assert(customer == testCustomer);
+        assert(customer == testCustomer.get());
 
-    }
-
-    @Test
-    public void givenUserService_WhenDeletingOneUserById_ThenCheckUserListSizeDecremented()
-    {
-        ///given
-        when(userRepositoryMock.findAll()).thenReturn(this.givenAllUsers());
-
-        List<User> allUsers = userRepositoryMock.findAll();
-        Integer userCountBeforeDelete = allUsers.size();
-
-        Long testId = allUsers.get(0).getUserId();
-
-        //when
-        userRepositoryMock.deleteById(testId);
-
-        //then
-        Integer userCountAfterDelete = userRepositoryMock.findAll().size();
-        assert(userCountBeforeDelete.intValue() == userCountAfterDelete.intValue());
-    }
-
-    @Test
-    public void givenUserService_WhenDeletingOneUserByUser_ThenCheckUserListSizeDecremented()
-    {
-        ///given
-
-
-        List<User> allUsers = userRepositoryMock.findAll();
-        Integer userCountBeforeDelete = allUsers.size();
-
-        User userToDelete=userRepositoryMock.findAll().get(0);
-
-        //when
-        userRepositoryMock.delete(userToDelete);
-
-        //then
-        Integer userCountAfterDelete = userRepositoryMock.findAll().size();
-        assert(userCountBeforeDelete.intValue() == userCountAfterDelete.intValue());
     }
 
     private List<User> givenAllUsers(){

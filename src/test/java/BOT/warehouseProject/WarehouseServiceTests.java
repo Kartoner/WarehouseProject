@@ -22,10 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
@@ -69,16 +66,16 @@ public class WarehouseServiceTests
     {
         ///Given
         Long testId = 0L;
-        WarehouseItem testItem= this.cleaningItem();
+        Optional<WarehouseItem> testItem= Optional.of(this.cleaningItem());
 
         ///When
-        when(warehouseItemRepositoryMock.getOne(argThat(aLong -> aLong.equals(testId))))
+        when(warehouseItemRepositoryMock.findById(argThat(aLong -> aLong.equals(testId))))
                 .thenAnswer((Answer)invocation ->testItem);
 
         WarehouseItem item = this.warehouseService.getWarehouseItem(testId).get();
 
         ///Then
-        assert(testItem.getItemName().equals(item.getItemName()));
+        assert(testItem.get().getItemName().equals(item.getItemName()));
     }
 
     @Test
@@ -96,23 +93,6 @@ public class WarehouseServiceTests
         ///Then
         assert(items.contains(testItem));
     }
-
-    @Test
-    public void givenOrder_WhenGetListOfOrder_ThenContainsOrder()
-    {
-        ItemType testType = ItemType.Cleaning;
-        WarehouseItem testItem= this.cleaningItem();
-
-        ///When
-        when(warehouseItemRepositoryMock.findByItemType(argThat(aItemType -> aItemType == testType)))
-                .thenAnswer((Answer)invocation ->testItem);
-
-        List<WarehouseItem> items = this.warehouseService.getItemsByType(testType);
-
-        ///Then
-        assert(items.contains(testItem));
-    }
-
 
     @Test
     public void givenItemList_WhenItem_ItemListWithdecrementedCount()
