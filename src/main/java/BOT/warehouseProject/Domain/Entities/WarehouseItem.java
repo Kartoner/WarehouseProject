@@ -2,7 +2,6 @@ package BOT.warehouseProject.Domain.Entities;
 
 import BOT.warehouseProject.Domain.Enums.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -33,16 +32,6 @@ public class WarehouseItem {
     private Double price;
 
     public WarehouseItem() {
-    }
-
-    public WarehouseItem(String itemString){
-        String[] itemParams = itemString.split(" @@ ");
-
-        this.itemName = itemParams[0].trim();
-        this.itemType = ItemType.valueOf(itemParams[1].trim());
-        this.itemDescription = itemParams[2].trim();
-        this.quantity = Integer.valueOf(itemParams[3].trim());
-        this.price = Double.valueOf(itemParams[4].trim());
     }
 
     public WarehouseItem(String itemName,
@@ -106,8 +95,14 @@ public class WarehouseItem {
     }
 
     @Override
-    @JsonValue
     public String toString() {
-        return itemName + " @@ " + itemType + " @@ " + itemDescription + " @@ " + quantity + " @@ " + price;
+        return "WarehouseItem{" +
+                "id=" + id +
+                ", itemName='" + itemName + '\'' +
+                ", itemType=" + itemType +
+                ", itemDescription='" + itemDescription + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
     }
 }

@@ -20,9 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -228,14 +226,12 @@ public class WebController
     @RequestMapping(value = "/delivery/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createDelivery(@RequestBody Delivery delivery, UriComponentsBuilder ucBuilder)
     {
-        Delivery populatedDelivery = populateDeliveryWithExisting(delivery);
-
-        Boolean isCreated = warehouseService.createDelivery(populatedDelivery);
+        Boolean isCreated = warehouseService.createDelivery(delivery);
 
         if(isCreated){
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(ucBuilder.path("/api/delivery/{id}")
-                    .buildAndExpand(populatedDelivery.getDeliveryId())
+                    .buildAndExpand(delivery.getDeliveryId())
                     .toUri());
 
             log.info("Delivery created successfully");
@@ -431,25 +427,5 @@ public class WebController
             log.error("Item not updated");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private Delivery populateDeliveryWithExisting(Delivery delivery){
-        User employee = userService.getUserByUsername(delivery.getEmployeeAccepting().getUsername()).get();
-        User customer = userService.getUserByUsername(delivery.getCustomerOrdering().getUsername()).get();
-
-        delivery.setEmployeeAccepting(employee);
-        delivery.setCustomerOrdering(customer);
-
-        Map<WarehouseItem, Integer> items = new HashMap<>();
-
-        for (Map.Entry<WarehouseItem, Integer> entry : delivery.getItemsOrdered().entrySet()){
-            WarehouseItem item = warehouseService.getItemByName(entry.getKey().getItemName()).get();
-
-            items.put(item, entry.getValue());
-        }
-
-        delivery.setItemsOrdered(items);
-
-        return delivery;
     }
 }

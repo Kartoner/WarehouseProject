@@ -1,6 +1,5 @@
 package BOT.warehouseProject.Domain.Services.Implementations;
 
-import BOT.warehouseProject.Authentication.Entities.User;
 import BOT.warehouseProject.Database.Repositories.DeliveryRepository;
 import BOT.warehouseProject.Database.Repositories.WarehouseItemRepository;
 import BOT.warehouseProject.Domain.Entities.Delivery;
@@ -8,14 +7,15 @@ import BOT.warehouseProject.Domain.Entities.WarehouseItem;
 import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
 import BOT.warehouseProject.Domain.Enums.ItemType;
 import BOT.warehouseProject.Domain.Services.IWarehouseService;
+import BOT.warehouseProject.Domain.Values.WarehouseItemData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service(value = "warehouseService")
 public class WarehouseServiceImplementation implements IWarehouseService {
@@ -100,10 +100,13 @@ public class WarehouseServiceImplementation implements IWarehouseService {
         try {
             if (checkDelivery(delivery)){
                 deliveryRepository.save(delivery);
-                Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
+                Set <WarehouseItemData> itemsOrdered = delivery.getItemsOrdered();
 
-                for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-                    this.updateStock(entry.getKey().getItemId(), entry.getKey().getQuantity() - entry.getValue());
+                for (WarehouseItemData item : itemsOrdered){
+                    Optional<WarehouseItem> warehouseItem = warehouseItemRepository.findById(item.getItemDataId());
+
+                    this.updateStock(warehouseItem.get().getItemId(),
+                            warehouseItem.get().getQuantity() - item.getQuantity());
                 }
             } else {
                 log.info("Invalid delivery");
@@ -164,12 +167,12 @@ public class WarehouseServiceImplementation implements IWarehouseService {
     }
 
     private Boolean checkDelivery(Delivery delivery) {
-        Map<WarehouseItem, Integer> itemsOrdered = delivery.getItemsOrdered();
+        Set <WarehouseItemData> itemsOrdered = delivery.getItemsOrdered();
         Optional<WarehouseItem> tempItem;
 
-        for (Map.Entry<WarehouseItem, Integer> entry : itemsOrdered.entrySet()){
-            tempItem = warehouseItemRepository.findByItemName(entry.getKey().getItemName());
-            if (tempItem.get().getQuantity() - entry.getValue() < 0){
+        for (WarehouseItemData item : itemsOrdered){
+            tempItem = warehouseItemRepository.findByItemName(item.getItemName());
+            if (tempItem.get().getQuantity() - item.getQuantity() < 0){
                 return Boolean.FALSE;
             }
         }

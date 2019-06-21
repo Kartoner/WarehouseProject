@@ -3,7 +3,6 @@ package BOT.warehouseProject.Authentication.Entities;
 import BOT.warehouseProject.Authentication.Enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import javax.persistence.*;
 
@@ -44,19 +43,6 @@ public class User {
     private String phoneNumber;
 
     public User() {
-    }
-
-    public User(String userString){
-        String[] userParams = userString.split(" @@ ");
-
-        this.username = userParams[0].trim();
-        this.password = userParams[1].trim();
-        this.userStatus = UserStatus.valueOf(userParams[2].trim());
-        this.firstName = userParams[3].trim();
-        this.lastName = userParams[4].trim();
-        this.address = userParams[5].trim();
-        this.email = userParams[6].trim();
-        this.phoneNumber = userParams[7].trim();
     }
 
     public User(String username,
@@ -150,15 +136,17 @@ public class User {
     }
 
     @Override
-    @JsonValue
     public String toString() {
-        return  username +
-                " @@ " + password +
-                " @@ " + userStatus +
-                " @@ " + firstName +
-                " @@ " + lastName +
-                " @@ " + address +
-                " @@ " + email +
-                " @@ " + phoneNumber;
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", userStatus=" + userStatus +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
     }
 }

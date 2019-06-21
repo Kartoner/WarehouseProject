@@ -218,13 +218,7 @@ public class WarehouseServiceTests
         UserServiceTests serviceTests = new UserServiceTests();
 
 
-        Delivery d1 = new Delivery(serviceTests.givenEmployeeUser(),
-                serviceTests.givenCustomerUser(),
-                "address",
-                DeliveryStatus.Accepted,
-                orderedProduct1(),
-                this.countOveralPriceFor(null),
-                Boolean.FALSE);
+        Delivery d1 = new Delivery();
         return d1;
     }
 

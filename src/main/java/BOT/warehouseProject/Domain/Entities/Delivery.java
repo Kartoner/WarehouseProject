@@ -1,14 +1,13 @@
 package BOT.warehouseProject.Domain.Entities;
 
-import BOT.warehouseProject.Authentication.Entities.User;
-import BOT.warehouseProject.Authentication.Serialization.UserDeserializer;
+import BOT.warehouseProject.Authentication.Values.UserData;
 import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
-import BOT.warehouseProject.Domain.Serialization.WarehouseItemDeserializer;
+import BOT.warehouseProject.Domain.Values.WarehouseItemData;
+import BOT.warehouseProject.Infrastructure.Converters.UserDataConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
-import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "delivery")
@@ -19,13 +18,11 @@ public class Delivery {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(keyUsing = UserDeserializer.class)
-    private User employeeAccepting;
+    @Convert(converter = UserDataConverter.class)
+    private UserData employeeAccepting;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(keyUsing = UserDeserializer.class)
-    private User customerOrdering;
+    @Convert(converter = UserDataConverter.class)
+    private UserData customerOrdering;
 
     @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress;
@@ -34,12 +31,10 @@ public class Delivery {
     @Column(name = "delivery_status", nullable = false)
     private DeliveryStatus deliveryStatus;
 
-    @ElementCollection
-    @CollectionTable(name="delivery_item",
-            joinColumns={@JoinColumn(name="delivery_id")})
-    @MapKeyJoinColumn(name="warehouse_item_id")
-    @JsonDeserialize(keyUsing = WarehouseItemDeserializer.class)
-    private Map<WarehouseItem, Integer> itemsOrdered;
+    @ElementCollection(targetClass = WarehouseItemData.class)
+    @CollectionTable(name="delivery_item")
+    @JoinColumn(name="delivery_id", referencedColumnName = "id")
+    private Set itemsOrdered;
 
     @Column(name = "overall_price", nullable = false)
     private Double overallPrice;
@@ -50,11 +45,11 @@ public class Delivery {
     public Delivery() {
     }
 
-    public Delivery(User employeeAccepting,
-                    User customerOrdering,
+    public Delivery(UserData employeeAccepting,
+                    UserData customerOrdering,
                     String deliveryAddress,
                     DeliveryStatus deliveryStatus,
-                    Map<WarehouseItem, Integer> itemsOrdered,
+                    Set itemsOrdered,
                     Double overallPrice,
                     Boolean isPaid) {
         this.employeeAccepting = employeeAccepting;
@@ -74,19 +69,19 @@ public class Delivery {
         this.id = id;
     }
 
-    public User getEmployeeAccepting() {
+    public UserData getEmployeeAccepting() {
         return employeeAccepting;
     }
 
-    public void setEmployeeAccepting(User employeeAccepting) {
+    public void setEmployeeAccepting(UserData employeeAccepting) {
         this.employeeAccepting = employeeAccepting;
     }
 
-    public User getCustomerOrdering() {
+    public UserData getCustomerOrdering() {
         return customerOrdering;
     }
 
-    public void setCustomerOrdering(User customerOrdering) {
+    public void setCustomerOrdering(UserData customerOrdering) {
         this.customerOrdering = customerOrdering;
     }
 
@@ -106,11 +101,11 @@ public class Delivery {
         this.deliveryStatus = deliveryStatus;
     }
 
-    public Map<WarehouseItem, Integer> getItemsOrdered() {
+    public Set getItemsOrdered() {
         return itemsOrdered;
     }
 
-    public void setItemsOrdered(Map<WarehouseItem, Integer> itemsOrdered) {
+    public void setItemsOrdered(Set itemsOrdered) {
         this.itemsOrdered = itemsOrdered;
     }
 
