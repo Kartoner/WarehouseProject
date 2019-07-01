@@ -34,7 +34,7 @@ public class Delivery {
     @ElementCollection(targetClass = WarehouseItemData.class)
     @CollectionTable(name="delivery_item")
     @JoinColumn(name="delivery_id", referencedColumnName = "id")
-    private Set itemsOrdered;
+    private Set<WarehouseItemData> itemsOrdered;
 
     @Column(name = "overall_price", nullable = false)
     private Double overallPrice;
@@ -49,7 +49,7 @@ public class Delivery {
                     UserData customerOrdering,
                     String deliveryAddress,
                     DeliveryStatus deliveryStatus,
-                    Set itemsOrdered,
+                    Set<WarehouseItemData> itemsOrdered,
                     Double overallPrice,
                     Boolean isPaid) {
         this.employeeAccepting = employeeAccepting;
@@ -101,11 +101,11 @@ public class Delivery {
         this.deliveryStatus = deliveryStatus;
     }
 
-    public Set getItemsOrdered() {
+    public Set<WarehouseItemData> getItemsOrdered() {
         return itemsOrdered;
     }
 
-    public void setItemsOrdered(Set itemsOrdered) {
+    public void setItemsOrdered(Set<WarehouseItemData> itemsOrdered) {
         this.itemsOrdered = itemsOrdered;
     }
 

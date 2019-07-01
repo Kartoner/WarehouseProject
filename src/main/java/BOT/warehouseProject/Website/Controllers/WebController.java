@@ -9,6 +9,8 @@ import BOT.warehouseProject.Domain.Entities.WarehouseItem;
 import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
 import BOT.warehouseProject.Domain.Enums.ItemType;
 import BOT.warehouseProject.Domain.Services.IWarehouseService;
+import BOT.warehouseProject.Domain.Session.ICart;
+import BOT.warehouseProject.Domain.Values.WarehouseItemData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -32,13 +35,16 @@ public class WebController
 
     private final IUserService userService;
     private final IWarehouseService warehouseService;
+    private final ICart cart;
 
     @Autowired
     public WebController(@Qualifier("userService") IUserService userService,
-                         @Qualifier("warehouseService") IWarehouseService warehouseService)
+                         @Qualifier("warehouseService") IWarehouseService warehouseService,
+                         @Qualifier("cart") ICart cart)
     {
         this.userService = userService;
         this.warehouseService = warehouseService;
+        this.cart = cart;
     }
 
     @RequestMapping(value = "/user/login", method = RequestMethod.GET)
@@ -54,6 +60,44 @@ public class WebController
             log.error("Invalid username or password");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @RequestMapping(value = "/cart/{id}/{quantity}", method = RequestMethod.GET)
+    public ResponseEntity<?> addToCart(@PathVariable("id")long id,
+                                       @PathVariable("quantity")int quantity)
+    {
+        Optional<WarehouseItem> warehouseItem = warehouseService.getWarehouseItem(id);
+
+        if(warehouseItem.isEmpty())
+        {
+            log.error("Item with ID = " + id + " not found");
+            return new ResponseEntity(warehouseItem, HttpStatus.NOT_FOUND);
+        }
+
+        WarehouseItemData warehouseItemData = new WarehouseItemData(warehouseItem.get().getItemId(),
+                                                                    warehouseItem.get().getItemName(),
+                                                                    warehouseItem.get().getItemType(),
+                                                                    warehouseItem.get().getPrice(),
+                                                                    quantity);
+
+        cart.addToCart(warehouseItemData);
+
+        return new ResponseEntity<>(warehouseItemData, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/cart", method = RequestMethod.GET)
+    public ResponseEntity<?> getCart(){
+
+        Set<WarehouseItemData> itemsInCart = cart.getItemsInCart();
+
+        if(itemsInCart.isEmpty())
+        {
+            log.info("Cart is empty");
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Retrieved " + itemsInCart.size() + " items in cart");
+        return new ResponseEntity<>(itemsInCart, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
@@ -226,6 +270,10 @@ public class WebController
     @RequestMapping(value = "/delivery/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createDelivery(@RequestBody Delivery delivery, UriComponentsBuilder ucBuilder)
     {
+        delivery.setItemsOrdered(cart.getItemsInCart());
+        delivery.setPaid(Boolean.FALSE);
+        delivery.setDeliveryStatus(DeliveryStatus.Accepted);
+
         Boolean isCreated = warehouseService.createDelivery(delivery);
 
         if(isCreated){

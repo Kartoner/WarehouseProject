@@ -1,2 +1,2 @@
 # warehouseProject
-Zajęcia frameworki biznesowe 
+Zajęcia persystencje 
