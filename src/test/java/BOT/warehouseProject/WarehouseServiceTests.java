@@ -1,15 +1,11 @@
 package BOT.warehouseProject;
 
-import BOT.warehouseProject.Authentication.Entities.User;
-import BOT.warehouseProject.Authentication.Enums.UserStatus;
-import BOT.warehouseProject.Database.Repositories.DeliveryRepository;
-import BOT.warehouseProject.Database.Repositories.WarehouseItemRepository;
-import BOT.warehouseProject.Domain.Entities.Delivery;
-import BOT.warehouseProject.Domain.Entities.WarehouseItem;
-import BOT.warehouseProject.Domain.Enums.DeliveryStatus;
-import BOT.warehouseProject.Domain.Enums.ItemType;
-import BOT.warehouseProject.Domain.Services.IWarehouseService;
-import BOT.warehouseProject.Domain.Services.Implementations.WarehouseServiceImplementation;
+import BOT.warehouseProject.Database.Repository.DeliveryRepository;
+import BOT.warehouseProject.Database.Repository.WarehouseItemRepository;
+import BOT.warehouseProject.Domain.Entity.Delivery;
+import BOT.warehouseProject.Domain.Entity.WarehouseItem;
+import BOT.warehouseProject.Domain.Enum.ItemType;
+import BOT.warehouseProject.Domain.Service.IWarehouseService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -218,13 +214,7 @@ public class WarehouseServiceTests
         UserServiceTests serviceTests = new UserServiceTests();
 
 
-        Delivery d1 = new Delivery(serviceTests.givenEmployeeUser(),
-                serviceTests.givenCustomerUser(),
-                "address",
-                DeliveryStatus.Accepted,
-                orderedProduct1(),
-                this.countOveralPriceFor(null),
-                Boolean.FALSE);
+        Delivery d1 = new Delivery();
         return d1;
     }
 

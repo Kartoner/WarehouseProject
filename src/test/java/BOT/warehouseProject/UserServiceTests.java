@@ -1,11 +1,10 @@
 package BOT.warehouseProject;
 
-import BOT.warehouseProject.Authentication.Entities.User;
-import BOT.warehouseProject.Authentication.Enums.UserStatus;
-import BOT.warehouseProject.Authentication.Services.IUserService;
-import BOT.warehouseProject.Authentication.Services.Implementations.UserServiceImplementation;
-import BOT.warehouseProject.Database.Repositories.UserRepository;
-import org.junit.Before;
+import BOT.warehouseProject.Authentication.Entity.User;
+import BOT.warehouseProject.Authentication.Enum.UserStatus;
+import BOT.warehouseProject.Authentication.Service.IUserService;
+import BOT.warehouseProject.Authentication.Service.Implementations.UserServiceImplementation;
+import BOT.warehouseProject.Database.Repository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;

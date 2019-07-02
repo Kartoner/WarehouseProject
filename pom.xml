@@ -12,7 +12,7 @@
 	<artifactId>warehouseProject</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>warehouseProject</name>
-	<description>Zajęcia frameworki biznesowe</description>
+	<description>Zajęcia persystencje</description>
 
 	<properties>
 		<java.version>11</java.version>
