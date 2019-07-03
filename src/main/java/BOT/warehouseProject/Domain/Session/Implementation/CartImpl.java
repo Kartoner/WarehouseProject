@@ -45,6 +45,13 @@ public class CartImpl implements ICart {
 
     @Override
     public Boolean addToCart(WarehouseItemData item){
+
+        if (item.getQuantity() == 0){
+            log.info("Item not added");
+
+            return Boolean.FALSE;
+        }
+
         try{
             this.itemsInCart.add(item);
             this.overallPrice += item.getPrice() * item.getQuantity();

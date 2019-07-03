@@ -11,7 +11,7 @@ public class UserDataConverter implements AttributeConverter <UserData, String> 
 
     @Override
     public String convertToDatabaseColumn(UserData userData) {
-        return userData.getUserId().toString() + "|" + userData.getUsername() + "|" + userData.getUserStatus().toString();
+        return userData.getUserId().toString() + "|" + userData.getFullName() + "|" + userData.getUserStatus().toString();
     }
 
     @Override

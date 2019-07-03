@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -164,6 +165,22 @@ public class WarehouseServiceImpl implements IWarehouseService {
     @Override
     public List<Delivery> getDeliveriesByStatus(DeliveryStatus deliveryStatus) {
         return deliveryRepository.findByDeliveryStatus(deliveryStatus);
+    }
+
+    @Override
+    public List<Delivery> getDeliveriesForUser(Long id){
+
+        List<Delivery> deliveries = this.getAllDeliveries();
+        List<Delivery> deliveriesForUser = new ArrayList<Delivery>();
+
+        for (Delivery delivery : deliveries){
+            if (delivery.getCustomerOrdering().getUserId() == id
+                    || delivery.getEmployeeAccepting().getUserId() == id){
+                deliveriesForUser.add(delivery);
+            }
+        }
+
+        return deliveriesForUser;
     }
 
     private Boolean checkDelivery(Delivery delivery) {

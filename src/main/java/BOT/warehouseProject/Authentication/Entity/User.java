@@ -135,6 +135,10 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getFullname(){
+        return this.firstName + " " + this.lastName;
+    }
+
     @Override
     public String toString() {
         return "User{" +

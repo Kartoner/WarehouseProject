@@ -124,6 +124,21 @@ public class WebController
         return new ResponseEntity<>(cartData, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/user/delivery", method = RequestMethod.GET)
+    public ResponseEntity<?> getDeliveriesForCurrentUser(){
+
+        List<Delivery> deliveries = warehouseService.getDeliveriesForUser(1L); //TODO zmienić na id zalogowanego użytkownika
+
+        if(deliveries.isEmpty())
+        {
+            log.info("List of deliveries for user with ID = " + 1L + " is empty"); //TODO j.w.
+            return new ResponseEntity(deliveries, HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Retrieved " + deliveries.size() + " deliveries for user with ID = " + 1L); //TODO j.w.
+        return new ResponseEntity<>(deliveries, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getUser(@PathVariable("id")long id)
     {
@@ -177,7 +192,7 @@ public class WebController
         if(users.isEmpty())
         {
             log.info("List of users is empty");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(users, HttpStatus.NO_CONTENT);
         }
 
         log.info("Retrieved " + users.size() + " users");
@@ -192,7 +207,7 @@ public class WebController
         if(deliveries.isEmpty())
         {
             log.info("List of deliveries is empty");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(deliveries, HttpStatus.NO_CONTENT);
         }
 
         log.info("Retrieved " + deliveries.size() + " deliveries");
@@ -207,7 +222,7 @@ public class WebController
         if(items.isEmpty())
         {
             log.info("List of items is empty");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(items, HttpStatus.NO_CONTENT);
         }
 
         log.info("Retrieved " + items.size() + " items");
@@ -224,7 +239,7 @@ public class WebController
         if(users.isEmpty())
         {
             log.info("List of users with " + userStatus.toString() + " status is empty");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(users, HttpStatus.NO_CONTENT);
         }
 
         log.info("Retrieved " + users.size() + " users with " + userStatus.toString() + " status");
@@ -241,7 +256,7 @@ public class WebController
         if(deliveries.isEmpty())
         {
             log.info("List of deliveries with " + deliveryStatus.toString() + " status is empty");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(deliveries, HttpStatus.NO_CONTENT);
         }
 
         log.info("Retrieved " + deliveries.size() + " deliveries with " + deliveryStatus.toString() + " status");
@@ -258,7 +273,7 @@ public class WebController
         if(items.isEmpty())
         {
             log.info("List of items of type " + itemType.toString() + " is empty");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(items, HttpStatus.NO_CONTENT);
         }
 
         log.info("Retrieved " + items.size() + " items of type " + itemType.toString());
@@ -266,7 +281,7 @@ public class WebController
     }
 
     // CREATE
-    @RequestMapping(value = "/user/", method = RequestMethod.POST)
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder)
     {
         Optional<User> existingUser = userService.getUserByUsername(user.getUsername());
@@ -291,7 +306,7 @@ public class WebController
 
     }
 
-    @RequestMapping(value = "/delivery/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/delivery", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createDelivery(@RequestBody Delivery delivery, UriComponentsBuilder ucBuilder)
     {
         delivery.setItemsOrdered(cart.getItemsInCart());
@@ -316,7 +331,7 @@ public class WebController
         }
     }
 
-    @RequestMapping(value = "/item/", method = RequestMethod.POST)
+    @RequestMapping(value = "/item", method = RequestMethod.POST)
     public ResponseEntity<?> createItem(@RequestBody WarehouseItem item, UriComponentsBuilder ucBuilder)
     {
         Optional<WarehouseItem> existingItem = warehouseService.getItemByName(item.getItemName());

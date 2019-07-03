@@ -7,16 +7,16 @@ public class UserData {
 
     private Long id;
 
-    private String username;
+    private String fullName;
 
     private UserStatus userStatus;
 
     public UserData() {
     }
 
-    public UserData(Long id, String username, UserStatus userStatus) {
+    public UserData(Long id, String fullName, UserStatus userStatus) {
         this.id = id;
-        this.username = username;
+        this.fullName = fullName;
         this.userStatus = userStatus;
     }
 
@@ -28,12 +28,12 @@ public class UserData {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public UserStatus getUserStatus() {
@@ -48,7 +48,7 @@ public class UserData {
     public String toString() {
         return "UserData{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", username='" + fullName + '\'' +
                 ", userStatus=" + userStatus +
                 '}';
     }
