@@ -3,7 +3,7 @@ package BOT.warehouseProject;
 import BOT.warehouseProject.Authentication.Entity.User;
 import BOT.warehouseProject.Authentication.Enum.UserStatus;
 import BOT.warehouseProject.Authentication.Service.IUserService;
-import BOT.warehouseProject.Authentication.Service.Implementations.UserServiceImplementation;
+import BOT.warehouseProject.Authentication.Service.Implementation.UserServiceImpl;
 import BOT.warehouseProject.Database.Repository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,7 @@ public class UserServiceTests
     @TestConfiguration
     static class UserServiceTestsConfiguration{
         @Bean IUserService userServiceTest(){
-            return new UserServiceImplementation();
+            return new UserServiceImpl();
         }
     }
 

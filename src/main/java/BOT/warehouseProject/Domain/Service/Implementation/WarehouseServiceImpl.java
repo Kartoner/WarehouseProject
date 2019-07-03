@@ -18,16 +18,16 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service(value = "warehouseService")
-public class WarehouseServiceImplementation implements IWarehouseService {
+public class WarehouseServiceImpl implements IWarehouseService {
 
-    private static final Logger log = LoggerFactory.getLogger(WarehouseServiceImplementation.class);
+    private static final Logger log = LoggerFactory.getLogger(WarehouseServiceImpl.class);
 
     private final WarehouseItemRepository warehouseItemRepository;
     private final DeliveryRepository deliveryRepository;
 
     @Autowired
-    public WarehouseServiceImplementation(WarehouseItemRepository warehouseItemRepository,
-                                          DeliveryRepository deliveryRepository)
+    public WarehouseServiceImpl(WarehouseItemRepository warehouseItemRepository,
+                                DeliveryRepository deliveryRepository)
     {
         this.warehouseItemRepository = warehouseItemRepository;
         this.deliveryRepository = deliveryRepository;
@@ -168,6 +168,11 @@ public class WarehouseServiceImplementation implements IWarehouseService {
 
     private Boolean checkDelivery(Delivery delivery) {
         Set <WarehouseItemData> itemsOrdered = delivery.getItemsOrdered();
+
+        if (itemsOrdered.isEmpty()){
+            return Boolean.FALSE;
+        }
+
         Optional<WarehouseItem> tempItem;
 
         for (WarehouseItemData item : itemsOrdered){

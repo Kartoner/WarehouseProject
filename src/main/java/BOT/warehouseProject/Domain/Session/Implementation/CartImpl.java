@@ -14,16 +14,17 @@ import java.util.Set;
 
 @Component(value = "cart")
 @Scope(value="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class Cart implements ICart {
+public class CartImpl implements ICart {
 
-    private static final Logger log = LoggerFactory.getLogger(Cart.class);
+    private static final Logger log = LoggerFactory.getLogger(CartImpl.class);
 
     private Set<WarehouseItemData> itemsInCart = new LinkedHashSet<WarehouseItemData>();
 
     @Digits(integer = 10, fraction = 2)
     private Double overallPrice = 0.0d;
 
-    public Cart() {
+    public CartImpl() {
+
     }
 
     @Override
@@ -92,7 +93,7 @@ public class Cart implements ICart {
 
     @Override
     public String toString() {
-        return "Cart{" +
+        return "CartImpl{" +
                 "itemsInCart=" + itemsInCart +
                 ", overallPrice=" + overallPrice +
                 '}';

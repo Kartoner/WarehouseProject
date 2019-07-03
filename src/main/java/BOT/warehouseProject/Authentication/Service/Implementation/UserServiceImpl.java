@@ -1,4 +1,4 @@
-package BOT.warehouseProject.Authentication.Service.Implementations;
+package BOT.warehouseProject.Authentication.Service.Implementation;
 
 import BOT.warehouseProject.Authentication.Entity.User;
 import BOT.warehouseProject.Authentication.Enum.UserStatus;
@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service(value = "userService")
-public class UserServiceImplementation implements IUserService {
+public class UserServiceImpl implements IUserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImplementation.class);
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
