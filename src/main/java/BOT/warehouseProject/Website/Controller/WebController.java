@@ -139,6 +139,13 @@ public class WebController
         return new ResponseEntity<>(deliveries, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/user/details", method = RequestMethod.GET)
+    public ResponseEntity<?> getCurrentUserDetails(){
+        Optional<User> currentUser = userService.getUser(1L); //TODO zmienić na id zalogowanego użytkownika
+
+        return new ResponseEntity<>(currentUser.get(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getUser(@PathVariable("id")long id)
     {
