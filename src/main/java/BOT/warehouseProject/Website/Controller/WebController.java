@@ -20,15 +20,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@RestController
-@RequestMapping("/api")
+@Controller
 public class WebController
 {
 
@@ -46,6 +47,11 @@ public class WebController
         this.userService = userService;
         this.warehouseService = warehouseService;
         this.cart = cart;
+    }
+
+    @GetMapping({"/", "/index"})
+    public ModelAndView index(){
+        return new ModelAndView("index");
     }
 
     @RequestMapping(value = "/user/login", method = RequestMethod.GET)
