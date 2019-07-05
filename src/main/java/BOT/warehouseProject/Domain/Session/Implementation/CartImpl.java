@@ -7,13 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.validation.constraints.Digits;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Component(value = "cart")
-@Scope(value="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CartImpl implements ICart {
 
     private static final Logger log = LoggerFactory.getLogger(CartImpl.class);
