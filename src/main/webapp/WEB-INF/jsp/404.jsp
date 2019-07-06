@@ -4,11 +4,16 @@
 
 <html>
 <head>
-    <title>My profile</title>
+    <title>Welcome</title>
     <link href="/css/style.css" rel="stylesheet">
     <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <jsp:include page="../navbar.jsp" />
+<jsp:include page="navbar.jsp" />
+<div class="mainWindow">
+    <div class="infoArea">
+        <h1>Oops! Something went wrong! Check if data you provided is correct</h1>
+    </div>
+</div>
 </body>
 </html>

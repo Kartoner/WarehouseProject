@@ -2,7 +2,8 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<div class="container">
+<div class="navbar-container container">
+    <h2>Menu: </h2>
     <ul class="nav">
         <li><a href="${pageContext.request.contextPath}/">Home</a></li>
         <li><a href="${pageContext.request.contextPath}/user">Users</a></li>

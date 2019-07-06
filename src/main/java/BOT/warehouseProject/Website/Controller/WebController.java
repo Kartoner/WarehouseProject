@@ -1,7 +1,6 @@
 package BOT.warehouseProject.Website.Controller;
 
 import BOT.warehouseProject.Authentication.Entity.User;
-import BOT.warehouseProject.Authentication.Enum.UserStatus;
 import BOT.warehouseProject.Authentication.Service.IUserService;
 import BOT.warehouseProject.Authentication.Value.AuthContainer;
 import BOT.warehouseProject.Domain.Entity.Delivery;
@@ -213,18 +212,21 @@ public class WebController
     }
 
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllDeliveries()
+    public ModelAndView getAllDeliveries()
     {
         List<Delivery> deliveries = warehouseService.getAllDeliveries();
 
         if(deliveries.isEmpty())
         {
             log.info("List of deliveries is empty");
-            return new ResponseEntity(deliveries, HttpStatus.NO_CONTENT);
         }
 
+        ModelAndView deliveryListView = new ModelAndView("/lists/deliveryList");
+        deliveryListView.addObject("deliveries", deliveries);
+        deliveryListView.addObject("deliveryStatuses", DeliveryStatus.values());
+
         log.info("Retrieved " + deliveries.size() + " deliveries");
-        return new ResponseEntity<>(deliveries, HttpStatus.OK);
+        return deliveryListView;
     }
 
     @RequestMapping(value = "/item", method = RequestMethod.GET)
@@ -242,25 +244,24 @@ public class WebController
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/user/status/{status}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUsersByStatus(@PathVariable("status")String status)
+    @RequestMapping(value = "/user/role/{role}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUsersByStatus(@PathVariable("role")String role)
     {
-        UserStatus userStatus = UserStatus.valueOf(status);
 
-        List<User> users = userService.getUsersByStatus(userStatus);
+        List<User> users = userService.getUsersByRole(role);
 
         if(users.isEmpty())
         {
-            log.info("List of users with " + userStatus.toString() + " status is empty");
+            log.info("List of users with " + role + " status is empty");
             return new ResponseEntity(users, HttpStatus.NO_CONTENT);
         }
 
-        log.info("Retrieved " + users.size() + " users with " + userStatus.toString() + " status");
+        log.info("Retrieved " + users.size() + " users with " + role + " status");
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/delivery/status/{status}", method = RequestMethod.GET)
-    public ResponseEntity<?> getDeliveriesByStatus(@PathVariable("status")String status)
+    @RequestMapping(value = "/delivery/status", method = RequestMethod.GET)
+    public ModelAndView getDeliveriesByStatus(@RequestParam("status")String status)
     {
         DeliveryStatus deliveryStatus = DeliveryStatus.valueOf(status);
 
@@ -269,11 +270,13 @@ public class WebController
         if(deliveries.isEmpty())
         {
             log.info("List of deliveries with " + deliveryStatus.toString() + " status is empty");
-            return new ResponseEntity(deliveries, HttpStatus.NO_CONTENT);
         }
+        ModelAndView deliveryListView = new ModelAndView("/lists/deliveryList");
+        deliveryListView.addObject("deliveries", deliveries);
+        deliveryListView.addObject("deliveryStatuses", DeliveryStatus.values());
 
         log.info("Retrieved " + deliveries.size() + " deliveries with " + deliveryStatus.toString() + " status");
-        return new ResponseEntity<>(deliveries, HttpStatus.OK);
+        return deliveryListView;
     }
 
     @RequestMapping(value = "/item/type/{type}", method = RequestMethod.GET)
@@ -453,7 +456,7 @@ public class WebController
 
         currentUser.setUsername(user.getUsername());
         currentUser.setPassword(user.getPassword());
-        currentUser.setUserStatus(user.getUserStatus());
+        currentUser.setUserRole(user.getUserRole());
         currentUser.setFirstName(user.getFirstName());
         currentUser.setLastName(user.getLastName());
         currentUser.setAddress(user.getAddress());

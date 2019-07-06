@@ -4,11 +4,14 @@
 
 <html>
 <head>
-    <title>My profile</title>
+    <title>Welcome</title>
     <link href="/css/style.css" rel="stylesheet">
     <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <jsp:include page="../navbar.jsp" />
+<jsp:include page="./navbar.jsp" />
+<div class="mainWindow">
+    <h1>Hello World!</h1>
+</div>
 </body>
 </html>

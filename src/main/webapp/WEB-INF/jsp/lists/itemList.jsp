@@ -5,9 +5,10 @@
 <html>
 <head>
     <title>List of items</title>
-    <link href="css/style.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <jsp:include page="../header.jsp" />
+    <jsp:include page="../navbar.jsp" />
 </body>
 </html>

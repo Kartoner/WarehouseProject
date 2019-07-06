@@ -1,8 +1,8 @@
 package BOT.warehouseProject.Authentication.Service.Implementation;
 
 import BOT.warehouseProject.Authentication.Entity.User;
-import BOT.warehouseProject.Authentication.Enum.UserStatus;
 import BOT.warehouseProject.Authentication.Service.IUserService;
+import BOT.warehouseProject.Database.Repository.RoleRepository;
 import BOT.warehouseProject.Database.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public Optional<User> authenticate(String username, String password) {
@@ -73,10 +76,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> getUsersByStatus(UserStatus userStatus) {
-        return userRepository.findByUserStatus(userStatus);
+    public List<User> getUsersByRole(String roleName) {
+        return userRepository.findByUserRole(roleName);
     }
 
     @Override
     public Optional<User> getUserByUsername(String username) { return userRepository.findByUsername(username); }
+
+    @Override
+    public List<String> getRolesList() { return roleRepository.getRoleNamesList(); }
 }

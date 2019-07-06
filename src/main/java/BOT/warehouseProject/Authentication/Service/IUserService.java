@@ -1,7 +1,6 @@
 package BOT.warehouseProject.Authentication.Service;
 
 import BOT.warehouseProject.Authentication.Entity.User;
-import BOT.warehouseProject.Authentication.Enum.UserStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +18,9 @@ public interface IUserService {
 
     public List<User> getAllUsers();
 
-    public List<User> getUsersByStatus(UserStatus userStatus);
+    public List<User> getUsersByRole(String roleName);
 
     public Optional<User> getUserByUsername(String username);
+
+    public List<String> getRolesList();
 }
