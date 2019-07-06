@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ taglib prefix="co" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -17,9 +16,9 @@
             <form action="${pageContext.request.contextPath}/delivery/status${status}">
                 <select name="status" onchange="this.form.submit()">
                     <option value=""></option>
-                    <co:forEach items="${deliveryStatuses}" var="status">
+                    <c:forEach items="${deliveryStatuses}" var="status">
                         <option>${status}</option>
-                    </co:forEach>
+                    </c:forEach>
                 </select>
             </form>
         </div>

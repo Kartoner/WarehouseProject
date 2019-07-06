@@ -14,6 +14,15 @@ ul.nav li a, ul.nav li a:visited {
     padding: 10px;
 }
 
+.btn {
+    float: right !important;
+    background-color: greenyellow !important;
+}
+
+.btn a {
+    color: black !important;
+}
+
 .navbar-container {
     float: left;
     background-color: cornflowerblue;

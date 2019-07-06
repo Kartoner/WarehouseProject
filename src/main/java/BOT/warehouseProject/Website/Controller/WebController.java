@@ -91,8 +91,8 @@ public class WebController
         return new ResponseEntity<>(warehouseItemData, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/cart/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> removeFromCart(@PathVariable("id")long id){
+    @RequestMapping(value = "/cart/{id}", method = RequestMethod.GET)
+    public ModelAndView removeFromCart(@PathVariable("id")long id){
 
         WarehouseItemData itemData = new WarehouseItemData();
 
@@ -106,15 +106,14 @@ public class WebController
 
         if(!isDeleted){
             log.error("Failed removing item from cart");
-            return  new ResponseEntity(itemData, HttpStatus.INTERNAL_SERVER_ERROR);
+            return  new ModelAndView("404");
         }
-
         log.info("Item removed from cart");
-        return new ResponseEntity(itemData, HttpStatus.OK);
+        return getCart();
     }
 
     @RequestMapping(value = "/cart", method = RequestMethod.GET)
-    public ResponseEntity<?> getCart(){
+    public ModelAndView getCart(){
 
         CartData cartData = new CartData(cart);
         Set<WarehouseItemData> itemsInCart = cartData.getItemsInCart();
@@ -122,11 +121,14 @@ public class WebController
         if(itemsInCart.isEmpty())
         {
             log.info("Cart is empty");
-            return new ResponseEntity(cartData, HttpStatus.NO_CONTENT);
         }
 
+        ModelAndView cartView = new ModelAndView("/views/cart");
+        cartView.addObject("items", itemsInCart);
+        cartView.addObject("overallPrice", cartData.getOverallPrice());
+
         log.info("Retrieved " + itemsInCart.size() + " items in cart");
-        return new ResponseEntity<>(cartData, HttpStatus.OK);
+        return cartView;
     }
 
     @RequestMapping(value = "/user/delivery", method = RequestMethod.GET)
@@ -197,18 +199,22 @@ public class WebController
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllUsers()
+    public ModelAndView getAllUsers()
     {
         List<User> users = userService.getAllUsers();
+        List<String> roles = userService.getRolesList();
 
         if(users.isEmpty())
         {
             log.info("List of users is empty");
-            return new ResponseEntity(users, HttpStatus.NO_CONTENT);
         }
 
+        ModelAndView userListView = new ModelAndView("/lists/userList");
+        userListView.addObject("users", users);
+        userListView.addObject("roles", roles);
+
         log.info("Retrieved " + users.size() + " users");
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return userListView;
     }
 
     @RequestMapping(value = "/delivery", method = RequestMethod.GET)
@@ -230,34 +236,40 @@ public class WebController
     }
 
     @RequestMapping(value = "/item", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllItems()
+    public ModelAndView getAllItems()
     {
         List<WarehouseItem> items = warehouseService.getAllItems();
 
         if(items.isEmpty())
         {
             log.info("List of items is empty");
-            return new ResponseEntity(items, HttpStatus.NO_CONTENT);
         }
 
+        ModelAndView itemListView = new ModelAndView("/lists/itemList");
+        itemListView.addObject("items", items);
+        itemListView.addObject("itemTypes", ItemType.values());
+
         log.info("Retrieved " + items.size() + " items");
-        return new ResponseEntity<>(items, HttpStatus.OK);
+        return itemListView;
     }
 
-    @RequestMapping(value = "/user/role/{role}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUsersByStatus(@PathVariable("role")String role)
+    @RequestMapping(value = "/user/role", method = RequestMethod.GET)
+    public ModelAndView getUsersByRole(@RequestParam("role")String role)
     {
-
         List<User> users = userService.getUsersByRole(role);
+        List<String> roles = userService.getRolesList();
 
         if(users.isEmpty())
         {
             log.info("List of users with " + role + " status is empty");
-            return new ResponseEntity(users, HttpStatus.NO_CONTENT);
         }
 
+        ModelAndView userListView = new ModelAndView("/lists/userList");
+        userListView.addObject("users", users);
+        userListView.addObject("roles", roles);
+
         log.info("Retrieved " + users.size() + " users with " + role + " status");
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return userListView;
     }
 
     @RequestMapping(value = "/delivery/status", method = RequestMethod.GET)
@@ -279,8 +291,8 @@ public class WebController
         return deliveryListView;
     }
 
-    @RequestMapping(value = "/item/type/{type}", method = RequestMethod.GET)
-    public ResponseEntity<?> getItemByType(@PathVariable("type")String type)
+    @RequestMapping(value = "/item/type", method = RequestMethod.GET)
+    public ModelAndView getItemByType(@RequestParam("type")String type)
     {
         ItemType itemType = ItemType.valueOf(type);
 
@@ -289,11 +301,14 @@ public class WebController
         if(items.isEmpty())
         {
             log.info("List of items of type " + itemType.toString() + " is empty");
-            return new ResponseEntity(items, HttpStatus.NO_CONTENT);
         }
 
+        ModelAndView itemListView = new ModelAndView("/lists/itemList");
+        itemListView.addObject("items", items);
+        itemListView.addObject("itemTypes", ItemType.values());
+
         log.info("Retrieved " + items.size() + " items of type " + itemType.toString());
-        return new ResponseEntity<>(items, HttpStatus.OK);
+        return itemListView;
     }
 
     // CREATE

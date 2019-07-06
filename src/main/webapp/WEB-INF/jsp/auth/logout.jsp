@@ -10,5 +10,10 @@
 </head>
 <body>
     <jsp:include page="../navbar.jsp" />
+    <div class="mainWindow">
+        <div class="infoArea">
+            <h1>You logged out!</h1>
+        </div>
+    </div>
 </body>
 </html>
