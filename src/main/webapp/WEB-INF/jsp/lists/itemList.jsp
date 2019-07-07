@@ -30,7 +30,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Type</th>
-                <th>Quantity</th>
+                <th>In stock</th>
                 <th>Price</th>
                 <th></th>
             </tr>
@@ -48,7 +48,7 @@
                 </tr>
             </c:forEach>
         </table>
-        <div class="btn">
+        <div class="btn btn-add">
             <a href="${pageContext.request.contextPath}/itemAdd">Add</a>
         </div>
     </div>

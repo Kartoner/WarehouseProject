@@ -52,7 +52,7 @@
                     </tr>
                 </c:forEach>
             </table>
-            <div class="btn">
+            <div class="btn btn-add">
                 <a href="${pageContext.request.contextPath}/userAdd">Add</a>
             </div>
         </div>

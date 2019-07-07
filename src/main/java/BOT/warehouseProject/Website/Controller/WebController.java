@@ -69,16 +69,16 @@ public class WebController
         }
     }
 
-    @RequestMapping(value = "/cart/{id}/{quantity}", method = RequestMethod.GET)
-    public ResponseEntity<?> addToCart(@PathVariable("id")long id,
-                                       @PathVariable("quantity")int quantity)
+    @RequestMapping(value = "/cartAdd/{id}", method = RequestMethod.GET)
+    public ModelAndView addToCart(@PathVariable("id")long id,
+                                       @RequestParam("quantity")int quantity)
     {
         Optional<WarehouseItem> warehouseItem = warehouseService.getWarehouseItem(id);
 
         if(warehouseItem.isEmpty())
         {
             log.error("Item with ID = " + id + " not found");
-            return new ResponseEntity(warehouseItem, HttpStatus.NOT_FOUND);
+            return new ModelAndView("404");
         }
 
         WarehouseItemData warehouseItemData = new WarehouseItemData(warehouseItem.get().getItemId(),
@@ -87,9 +87,13 @@ public class WebController
                                                                     warehouseItem.get().getPrice(),
                                                                     quantity);
 
-        cart.addToCart(warehouseItemData);
+        Boolean isAdded = cart.addToCart(warehouseItemData);
 
-        return new ResponseEntity<>(warehouseItemData, HttpStatus.OK);
+        if (isAdded){
+            return getCart();
+        } else {
+            return new ModelAndView("404");
+        }
     }
 
     @RequestMapping(value = "/cart/{id}", method = RequestMethod.GET)
@@ -189,7 +193,7 @@ public class WebController
         }
 
         ModelAndView deliveryView = new ModelAndView("/views/delivery");
-        deliveryView.addObject("delivery", delivery);
+        deliveryView.addObject("delivery", delivery.get());
 
         log.info("Delivery with ID = " + id + " found");
         return deliveryView;
@@ -208,7 +212,7 @@ public class WebController
         }
 
         ModelAndView itemView = new ModelAndView("/views/item");
-        itemView.addObject("item", warehouseItem);
+        itemView.addObject("item", warehouseItem.get());
 
         log.info("Item with ID = " + id + " found");
         return itemView;
@@ -573,8 +577,12 @@ public class WebController
         }
         Delivery currentDelivery = searchedDelivery.get();
 
-        currentDelivery.setEmployeeAccepting(delivery.getEmployeeAccepting());
-        currentDelivery.setCustomerOrdering(delivery.getCustomerOrdering());
+        Optional<User> employee = userService.getUser(1L); //TODO zmienić na zalogowanego usera
+        UserData employeeData = new UserData(employee.get().getUserId(),
+                employee.get().getFullname(),
+                employee.get().getUserRole().getName());
+
+        currentDelivery.setEmployeeAccepting(employeeData);
         currentDelivery.setDeliveryAddress(delivery.getDeliveryAddress());
         currentDelivery.setDeliveryStatus(delivery.getDeliveryStatus());
         currentDelivery.setPaid(delivery.getPaid());

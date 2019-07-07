@@ -10,5 +10,36 @@
 </head>
 <body>
     <jsp:include page="../navbar.jsp" />
+    <div class="mainWindow infoArea container">
+        <h3>My Profile: </h3>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td style="font-weight: bold">Username:</td>
+                    <td>${user.username}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">Full name:</td>
+                    <td>${user.fullname}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">Role:</td>
+                    <td>${user.userRole.name}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">Address:</td>
+                    <td>${user.address}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">Email:</td>
+                    <td>${user.email}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">Phone number:</td>
+                    <td>${user.phoneNumber}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
