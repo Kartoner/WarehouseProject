@@ -49,9 +49,18 @@
                 <th>${overallPrice} $</th>
             </tr>
         </table>
-        <div class="btn">
-            <a href="${pageContext.request.contextPath}/deliveryAdd">Create order</a>
-        </div>
+        <c:choose>
+            <c:when test="${!empty items}">
+                <div class="btn btn-add">
+                    <a href="${pageContext.request.contextPath}/deliveryAdd">Create order</a>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="btn btn-disabled">
+                    <a>Create order</a>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </div>
 </div>
 </body>

@@ -141,6 +141,13 @@ public class WarehouseServiceImpl implements IWarehouseService {
     @Override
     public Boolean deleteDelivery(Long id) {
         try{
+            Optional<Delivery> delivery = getDelivery(id);
+            Set<WarehouseItemData> items = delivery.get().getItemsOrdered();
+
+            for (WarehouseItemData itemData : items){
+                updateStock(itemData.getItemDataId(), itemData.getQuantity());
+            }
+
             deliveryRepository.deleteById(id);
         } catch (Exception ex){
             log.info("Failed deleting delivery");

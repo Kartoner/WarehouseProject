@@ -16,11 +16,22 @@ ul.nav li a, ul.nav li a:visited {
 
 .btn {
     float: right !important;
-    background-color: greenyellow !important;
 }
 
 .btn a {
     color: black !important;
+}
+
+.btn-add {
+    background-color: greenyellow !important;
+}
+
+.btn-remove {
+    background-color: red !important;
+}
+
+.btn-disabled {
+    background-color: grey !important;
 }
 
 .navbar-container {
