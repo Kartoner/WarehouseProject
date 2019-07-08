@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -12,7 +12,9 @@
         <jsp:include page="../navbar.jsp" />
         <div class="mainWindow infoArea container">
             <h3>Delivery No. ${delivery.deliveryId}'s details: </h3>
-            <a style="float: right; padding-right: 10px" href="${pageContext.request.contextPath}/user">Back</a>
+            <security:authorize access="hasAnyAuthority('ADMIN', 'EMPLOYEE')">
+                <a style="float: right; padding-right: 10px" href="${pageContext.request.contextPath}/delivery">Back</a>
+            </security:authorize>
             <table class="table">
                 <tbody>
                 <tr>
@@ -70,12 +72,14 @@
                     </tr>
                 </c:forEach>
             </table>
-            <div class="btn btn-add">
-                <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/update">Update</a>
-            </div>
-            <div class="btn btn-remove">
-                <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/remove">Remove</a>
-            </div>
+            <security:authorize access="hasAnyAuthority('ADMIN', 'EMPLOYEE')">
+                <div class="btn btn-add">
+                    <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/update">Update</a>
+                </div>
+                <div class="btn btn-remove">
+                    <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/remove">Remove</a>
+                </div>
+            </security:authorize>
         </div>
     </body>
 </html>

@@ -1,8 +1,8 @@
 package BOT.warehouseProject.Website.Controller;
 
 import BOT.warehouseProject.Authentication.Entity.User;
+import BOT.warehouseProject.Authentication.Service.ISecurityService;
 import BOT.warehouseProject.Authentication.Service.IUserService;
-import BOT.warehouseProject.Authentication.Value.AuthContainer;
 import BOT.warehouseProject.Authentication.Value.UserData;
 import BOT.warehouseProject.Domain.Entity.Delivery;
 import BOT.warehouseProject.Domain.Entity.WarehouseItem;
@@ -16,14 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,15 +32,18 @@ public class WebController
 
     private final IUserService userService;
     private final IWarehouseService warehouseService;
+    private final ISecurityService securityService;
     private final ICart cart;
 
     @Autowired
     public WebController(@Qualifier("userService") IUserService userService,
                          @Qualifier("warehouseService") IWarehouseService warehouseService,
+                         @Qualifier("securityService") ISecurityService securityService,
                          @Qualifier("cart") ICart cart)
     {
         this.userService = userService;
         this.warehouseService = warehouseService;
+        this.securityService = securityService;
         this.cart = cart;
     }
 
@@ -54,20 +52,8 @@ public class WebController
         return new ModelAndView("index");
     }
 
-    @RequestMapping(value = "/user/login", method = RequestMethod.GET)
-    public ResponseEntity<?> authenticate(@RequestBody AuthContainer authContainer){
-        Optional<User> authUser = userService.authenticate(authContainer.getUsername(), authContainer.getPassword());
-
-        if(authUser.isPresent()){
-            User user = authUser.get();
-
-            log.info("User authenticated");
-            return new ResponseEntity(user, HttpStatus.OK);
-        } else {
-            log.error("Invalid username or password");
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-    }
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ModelAndView login(){ return new ModelAndView("login"); }
 
     @RequestMapping(value = "/cartAdd/{id}", method = RequestMethod.GET)
     public ModelAndView addToCart(@PathVariable("id")long id,
@@ -139,23 +125,24 @@ public class WebController
     @RequestMapping(value = "/user/delivery", method = RequestMethod.GET)
     public ModelAndView getDeliveriesForCurrentUser(){
 
-        List<Delivery> deliveries = warehouseService.getDeliveriesForUser(1L); //TODO zmienić na id zalogowanego użytkownika
+        Optional<User> currentUser = userService.getUserByUsername(securityService.findLoggedInUsername());
+        List<Delivery> deliveries = warehouseService.getDeliveriesForUser(currentUser.get().getUserId());
 
         if(deliveries.isEmpty())
         {
-            log.info("List of deliveries for user with ID = " + 1L + " is empty"); //TODO j.w.
+            log.info("List of deliveries for user with ID = " + currentUser.get().getUserId() + " is empty");
         }
 
         ModelAndView userDeliveriesView = new ModelAndView("/lists/userDeliveryList");
         userDeliveriesView.addObject("deliveries", deliveries);
 
-        log.info("Retrieved " + deliveries.size() + " deliveries for user with ID = " + 1L); //TODO j.w.
+        log.info("Retrieved " + deliveries.size() + " deliveries for user with ID = " + currentUser.get().getUserId());
         return userDeliveriesView;
     }
 
     @RequestMapping(value = "/user/details", method = RequestMethod.GET)
     public ModelAndView getCurrentUserDetails(){
-        Optional<User> currentUser = userService.getUser(1L); //TODO zmienić na id zalogowanego użytkownika
+        Optional<User> currentUser = userService.getUserByUsername(securityService.findLoggedInUsername());
 
         ModelAndView userView = new ModelAndView("/views/profile");
         userView.addObject("user", currentUser.get());
@@ -372,7 +359,7 @@ public class WebController
     @RequestMapping(value = "/deliverySave", method = RequestMethod.POST)
     public ModelAndView createDelivery(@RequestBody Delivery delivery)
     {
-        Optional<User> customerOrdering = userService.getUser(1L); //TODO zmienić na zalogowanego usera
+        Optional<User> customerOrdering = userService.getUserByUsername(securityService.findLoggedInUsername());
         UserData customerData = new UserData(customerOrdering.get().getUserId(),
                 customerOrdering.get().getFullname(),
                 customerOrdering.get().getUserRole().getName());
@@ -577,7 +564,7 @@ public class WebController
         }
         Delivery currentDelivery = searchedDelivery.get();
 
-        Optional<User> employee = userService.getUser(1L); //TODO zmienić na zalogowanego usera
+        Optional<User> employee = userService.getUserByUsername(securityService.findLoggedInUsername());
         UserData employeeData = new UserData(employee.get().getUserId(),
                 employee.get().getFullname(),
                 employee.get().getUserRole().getName());

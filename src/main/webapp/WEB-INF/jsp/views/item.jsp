@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -48,12 +49,14 @@
                 </table>
             </div>
         </form>
-        <div class="btn btn-add">
-            <a href="${pageContext.request.contextPath}/item/${item.itemId}/update">Update</a>
-        </div>
-        <div class="btn btn-remove">
-            <a href="${pageContext.request.contextPath}/item/${item.itemId}/remove">Remove</a>
-        </div>
+        <security:authorize access="hasAnyAuthority('ADMIN', 'EMPLOYEE')">
+            <div class="btn btn-add">
+                <a href="${pageContext.request.contextPath}/item/${item.itemId}/update">Update</a>
+            </div>
+            <div class="btn btn-remove">
+                <a href="${pageContext.request.contextPath}/item/${item.itemId}/remove">Remove</a>
+            </div>
+        </security:authorize>
     </div>
 </body>
 </html>
