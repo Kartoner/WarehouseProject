@@ -9,6 +9,7 @@
         <li><a href="${pageContext.request.contextPath}/">Home</a></li>
         <c:if test="${pageContext.request.userPrincipal.name != null}">
             <security:authorize access="hasAuthority('ADMIN')">
+                <li><a href="${pageContext.request.contextPath}/h2-console">Database</a></li>
                 <li><a href="${pageContext.request.contextPath}/user">Users</a></li>
             </security:authorize>
             <security:authorize access="hasAnyAuthority('ADMIN', 'EMPLOYEE')">

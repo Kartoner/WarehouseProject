@@ -15,10 +15,11 @@
             <form method="POST" action="${pageContext.request.contextPath}/login" class="form-signin">
                 <h2 class="form-heading">Log in</h2>
 
-                <div class="form-group">
+                <div class="form-group ${error != null ? 'has-error' : ''}">
                     <input name="username" type="text" class="form-control" placeholder="Username"
                         autofocus="true"/>
                     <input name="password" type="password" class="form-control" placeholder="Password"/>
+                    <p style="color: red">${error}</p>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
                     <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>

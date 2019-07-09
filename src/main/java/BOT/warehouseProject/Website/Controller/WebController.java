@@ -1,5 +1,6 @@
 package BOT.warehouseProject.Website.Controller;
 
+import BOT.warehouseProject.Authentication.Entity.Role;
 import BOT.warehouseProject.Authentication.Entity.User;
 import BOT.warehouseProject.Authentication.Service.ISecurityService;
 import BOT.warehouseProject.Authentication.Service.IUserService;
@@ -17,10 +18,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,12 +55,18 @@ public class WebController
     }
 
     @GetMapping({"/", "/index"})
-    public ModelAndView index(){
-        return new ModelAndView("index");
-    }
+    public ModelAndView index(){ return new ModelAndView("index"); }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(){ return new ModelAndView("login"); }
+    public ModelAndView login(@RequestParam(value = "error", required = false)String error){
+        ModelAndView loginView = new ModelAndView("login");
+
+        if (error != null) {
+            loginView.addObject("error", "Your username or password is invalid!");
+        }
+
+        return loginView;
+    }
 
     @RequestMapping(value = "/cartAdd/{id}", method = RequestMethod.GET)
     public ModelAndView addToCart(@PathVariable("id")long id,
@@ -321,18 +334,24 @@ public class WebController
     // CREATE
     @RequestMapping(value = "/userAdd", method = RequestMethod.GET)
     public ModelAndView getUserForm(){
-        return new ModelAndView("/forms/userAdd");
+        ModelAndView userAddView = new ModelAndView("/forms/userAdd", "user", new User());
+        userAddView.addObject("userRoles", userService.getRolesList());
+
+        return userAddView;
     }
 
     @RequestMapping(value = "/userSave", method = RequestMethod.POST)
-    public ModelAndView createUser(@RequestBody User user)
+    public ModelAndView createUser(@Valid @ModelAttribute("user") User user, BindingResult result)
     {
         Optional<User> existingUser = userService.getUserByUsername(user.getUsername());
 
-        if(existingUser.isPresent()){
+        if(existingUser.isPresent() || result.hasErrors()){
             log.error("User already exists");
             return new ModelAndView("404");
         }
+
+        Role userRole = userService.getRoleByName(user.getRoleName()).get();
+        user.setUserRole(userRole);
 
         Boolean isCreated = userService.createUser(user);
 
@@ -340,7 +359,7 @@ public class WebController
 
             Optional<User> createdUser = userService.getUserByUsername(user.getUsername());
             ModelAndView userView = new ModelAndView("/views/user");
-            userView.addObject("user", createdUser);
+            userView.addObject("user", createdUser.get());
 
             log.info("User created successfully");
             return userView;
@@ -353,16 +372,32 @@ public class WebController
 
     @RequestMapping(value = "/deliveryAdd", method = RequestMethod.GET)
     public ModelAndView getDeliveryForm(){
-        return new ModelAndView("/forms/deliveryAdd");
+        User user = userService.getUserByUsername(securityService.findLoggedInUsername()).get();
+        Delivery delivery = new Delivery();
+        delivery.setDeliveryAddress(user.getAddress());
+        ModelAndView deliveryAddForm = new ModelAndView("/forms/deliveryAdd", "delivery", delivery);
+        deliveryAddForm.addObject("customer",
+                user.getFullname());
+        deliveryAddForm.addObject("cart", cart);
+
+        return deliveryAddForm;
     }
 
     @RequestMapping(value = "/deliverySave", method = RequestMethod.POST)
-    public ModelAndView createDelivery(@RequestBody Delivery delivery)
-    {
+    public ModelAndView createDelivery(@Valid @ModelAttribute("delivery") Delivery delivery, BindingResult result) throws ParseException {
+        if (result.hasErrors()){
+            log.error("Delivery not created");
+            return new ModelAndView("404");
+        }
+
         Optional<User> customerOrdering = userService.getUserByUsername(securityService.findLoggedInUsername());
         UserData customerData = new UserData(customerOrdering.get().getUserId(),
                 customerOrdering.get().getFullname(),
                 customerOrdering.get().getUserRole().getName());
+
+        LocalDateTime ldt = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+        delivery.setOrderDate(formatter.format(ldt));
 
         delivery.setCustomerOrdering(customerData);
         delivery.setItemsOrdered(cart.getItemsInCart());
@@ -389,15 +424,18 @@ public class WebController
 
     @RequestMapping(value = "/itemAdd", method = RequestMethod.GET)
     public ModelAndView getItemForm(){
-        return new ModelAndView("/forms/itemAdd");
+        ModelAndView itemAddView = new ModelAndView("/forms/itemAdd", "item", new WarehouseItem());
+        itemAddView.addObject("itemTypes", ItemType.values());
+
+        return itemAddView;
     }
 
     @RequestMapping(value = "/itemSave", method = RequestMethod.POST)
-    public ModelAndView createItem(@RequestBody WarehouseItem item)
+    public ModelAndView createItem(@Valid @ModelAttribute("item") WarehouseItem item, BindingResult result)
     {
         Optional<WarehouseItem> existingItem = warehouseService.getItemByName(item.getItemName());
 
-        if(existingItem.isPresent()){
+        if(existingItem.isPresent() || result.hasErrors()){
             log.error("Item already exists");
             return new ModelAndView("404");
         }
@@ -408,7 +446,7 @@ public class WebController
 
             Optional<WarehouseItem> createdItem = warehouseService.getItemByName(item.getItemName());
             ModelAndView itemView = new ModelAndView("/views/item");
-            itemView.addObject("item", createdItem);
+            itemView.addObject("item", createdItem.get());
 
             log.info("Item created successfully");
             return itemView;
@@ -419,7 +457,7 @@ public class WebController
     }
 
     //DELETE
-    @RequestMapping(value = "/user/{id}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{id}/remove", method = RequestMethod.GET)
     public ModelAndView deleteUser(@PathVariable("id") long id )
     {
         Optional<User> user = userService.getUser(id);
@@ -441,7 +479,7 @@ public class WebController
         }
     }
 
-    @RequestMapping(value = "/delivery/{id}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/delivery/{id}/remove", method = RequestMethod.GET)
     public ModelAndView deleteDelivery(@PathVariable("id") long id )
     {
         Optional<Delivery> delivery = warehouseService.getDelivery(id);
@@ -464,7 +502,7 @@ public class WebController
 
     }
 
-    @RequestMapping(value = "/item/{id}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/item/{id}/remove", method = RequestMethod.GET)
     public ModelAndView deleteItem(@PathVariable("id") long id )
     {
         Optional<WarehouseItem> item = warehouseService.getWarehouseItem(id);
@@ -497,18 +535,18 @@ public class WebController
             return new ModelAndView("404");
         }
 
-        ModelAndView updateForm = getUserForm();
-        updateForm.addObject("user", user);
+        ModelAndView updateForm = new ModelAndView("/forms/userUpdate", "user", user.get());
+        updateForm.addObject("id", id);
 
         return updateForm;
     }
 
-    @RequestMapping(value = "/user/{id}/save", method = RequestMethod.PUT)
-    public ModelAndView updateUser(@PathVariable("id") long id, @RequestBody User user)
+    @RequestMapping(value = "/user/{id}/save", method = RequestMethod.POST)
+    public ModelAndView updateUser(@PathVariable("id") long id, @Valid @ModelAttribute("user") User user, BindingResult result)
     {
         Optional<User> searchedUser = userService.getUser(id);
 
-        if(searchedUser.isEmpty())
+        if(searchedUser.isEmpty() || result.hasErrors())
         {
             log.error("User with given ID doesn't exist");
             return new ModelAndView("404");
@@ -517,7 +555,7 @@ public class WebController
         User currentUser = searchedUser.get();
 
         currentUser.setUsername(user.getUsername());
-        currentUser.setPassword(user.getPassword()); //TODO dodać BCrypt
+        currentUser.setPassword(user.getPassword());
         currentUser.setFirstName(user.getFirstName());
         currentUser.setLastName(user.getLastName());
         currentUser.setAddress(user.getAddress());
@@ -545,19 +583,19 @@ public class WebController
             return new ModelAndView("404");
         }
 
-        ModelAndView updateForm = getDeliveryForm();
-        updateForm.addObject("delivery", delivery);
+        ModelAndView updateForm = new ModelAndView("/forms/deliveryUpdate", "delivery", delivery.get());
         updateForm.addObject("deliveryStatuses", DeliveryStatus.values());
+        updateForm.addObject("id", id);
 
         return updateForm;
     }
 
-    @RequestMapping(value = "/delivery/{id}/save", method = RequestMethod.PUT)
-    public ModelAndView updateDelivery(@PathVariable("id") long id, @RequestBody Delivery delivery)
+    @RequestMapping(value = "/delivery/{id}/save", method = RequestMethod.POST)
+    public ModelAndView updateDelivery(@PathVariable("id") long id, @Valid @ModelAttribute("delivery") Delivery delivery, BindingResult result)
     {
         Optional<Delivery> searchedDelivery = warehouseService.getDelivery(id);
 
-        if(searchedDelivery.isEmpty())
+        if(searchedDelivery.isEmpty() || result.hasErrors())
         {
             log.error("Delivery with given ID doesn't exist");
             return new ModelAndView("404");
@@ -568,6 +606,13 @@ public class WebController
         UserData employeeData = new UserData(employee.get().getUserId(),
                 employee.get().getFullname(),
                 employee.get().getUserRole().getName());
+
+        if(delivery.getDeliveryStatus() == DeliveryStatus.Completed)
+        {
+            LocalDateTime ldt = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+            currentDelivery.setCompletionDate(formatter.format(ldt));
+        }
 
         currentDelivery.setEmployeeAccepting(employeeData);
         currentDelivery.setDeliveryAddress(delivery.getDeliveryAddress());
@@ -595,19 +640,19 @@ public class WebController
             return new ModelAndView("404");
         }
 
-        ModelAndView updateForm = getItemForm();
-        updateForm.addObject("item", item);
+        ModelAndView updateForm = new ModelAndView("/forms/itemUpdate", "item", item.get());
+        updateForm.addObject("id", id);
         updateForm.addObject("itemTypes", ItemType.values());
 
         return updateForm;
     }
 
-    @RequestMapping(value = "/item/{id}/save", method = RequestMethod.PUT)
-    public ModelAndView updateItem(@PathVariable("id") long id, @RequestBody WarehouseItem item)
+    @RequestMapping(value = "/item/{id}/save", method = RequestMethod.POST)
+    public ModelAndView updateItem(@PathVariable("id") long id, @Valid @ModelAttribute("item") WarehouseItem item, BindingResult result)
     {
         Optional<WarehouseItem> searchedItem = warehouseService.getWarehouseItem(id);
 
-        if(searchedItem.isEmpty())
+        if(searchedItem.isEmpty() || result.hasErrors())
         {
             log.error("Item with given ID doesn't exist");
             return new ModelAndView("404");

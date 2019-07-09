@@ -106,6 +106,14 @@ public class UserServiceImpl implements IUserService {
     public List<String> getRolesList() { return roleRepository.getRoleNamesList(); }
 
     @Override
+    @Transactional
+    public List<Role> getAllRoles(){ return roleRepository.findAll(); }
+
+    @Override
+    @Transactional
+    public Optional<Role> getRoleByName(String roleName){ return roleRepository.findByRoleName(roleName); }
+
+    @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username){
         Optional<User> user = userRepository.findByUsername(username);

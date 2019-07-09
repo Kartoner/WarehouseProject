@@ -39,6 +39,8 @@ public class User {
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
+    private String roleName;
+
     public User() {
     }
 
@@ -58,6 +60,7 @@ public class User {
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.roleName = this.userRole.getName();
     }
 
     public Long getUserId() {
@@ -134,6 +137,14 @@ public class User {
 
     public String getFullname(){
         return this.firstName + " " + this.lastName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     @Override

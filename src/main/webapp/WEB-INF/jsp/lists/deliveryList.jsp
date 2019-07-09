@@ -32,6 +32,8 @@
                         <th>Accepted by</th>
                         <th>Delivery address</th>
                         <th>Status</th>
+                        <th>Order date</th>
+                        <th>Completion date</th>
                         <th>Overall price</th>
                         <th></th>
                     </tr>
@@ -43,6 +45,8 @@
                         <th>${delivery.employeeAccepting.fullName}</th>
                         <th>${delivery.deliveryAddress}</th>
                         <th>${delivery.deliveryStatus}</th>
+                        <th>${delivery.orderDate}</th>
+                        <th>${delivery.completionDate}</th>
                         <th>${delivery.overallPrice} $</th>
                         <th>
                             <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}">Details</a>

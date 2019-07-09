@@ -45,7 +45,7 @@ public class UserData {
     public String toString() {
         return "UserData{" +
                 "id=" + id +
-                ", username='" + fullName + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", userRole=" + userRole +
                 '}';
     }

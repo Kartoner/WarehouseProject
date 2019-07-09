@@ -38,6 +38,14 @@
                     <td>${delivery.deliveryStatus}</td>
                 </tr>
                 <tr>
+                    <td style="font-weight: bold">Order date:</td>
+                    <td>${delivery.orderDate}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">Completion date:</td>
+                    <td>${delivery.completionDate}</td>
+                </tr>
+                <tr>
                     <td style="font-weight: bold">Overall price:</td>
                     <td>${delivery.overallPrice} $</td>
                 </tr>
@@ -73,12 +81,14 @@
                 </c:forEach>
             </table>
             <security:authorize access="hasAnyAuthority('ADMIN', 'EMPLOYEE')">
-                <div class="btn btn-add">
-                    <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/update">Update</a>
-                </div>
-                <div class="btn btn-remove">
-                    <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/remove">Remove</a>
-                </div>
+                <c:if test="${!(delivery.deliveryStatus eq 'Completed')}">
+                    <div class="btn btn-add">
+                        <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/update">Update</a>
+                    </div>
+                    <div class="btn btn-remove">
+                        <a href="${pageContext.request.contextPath}/delivery/${delivery.deliveryId}/remove">Remove</a>
+                    </div>
+                </c:if>
             </security:authorize>
         </div>
     </body>

@@ -1,5 +1,6 @@
 package BOT.warehouseProject.Authentication.Service;
 
+import BOT.warehouseProject.Authentication.Entity.Role;
 import BOT.warehouseProject.Authentication.Entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,10 @@ public interface IUserService extends UserDetailsService {
     public Optional<User> getUserByUsername(String username);
 
     public List<String> getRolesList();
+
+    public List<Role> getAllRoles();
+
+    public Optional<Role> getRoleByName(String roleName);
 
     public UserDetails loadUserByUsername(String username);
 }

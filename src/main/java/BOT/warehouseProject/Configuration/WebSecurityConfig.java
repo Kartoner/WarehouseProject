@@ -37,11 +37,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/user", "/user*", "/user/*/*", "/user/role*").hasAuthority("ADMIN")
-                    .antMatchers("/delivery", "/delivery*", "/delivery/*/*", "/delivery/status*", "/item*", "/item/*/*").hasAnyAuthority("ADMIN", "EMPLOYEE")
-                    .antMatchers("/cart", "/cartAdd/*", "/cart/**", "/item", "/item/type*", "/user/details", "/user/delivery", "/delivery/*").hasAnyAuthority("ADMIN", "EMPLOYEE", "CUSTOMER")
+                    .antMatchers("/user", "/user*", "/user/*/*", "/user/role*", "/h2-console/**").hasAuthority("ADMIN")
+                    .antMatchers("/delivery", "/delivery/*/*", "/delivery/status*", "/itemAdd", "/itemSave", "/item/*/*").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                    .antMatchers("/cart", "/cartAdd/*", "/cart/**", "/item", "/item/type*", "/user/details", "/user/delivery", "/delivery/*", "/delivery*").hasAnyAuthority("ADMIN", "EMPLOYEE", "CUSTOMER")
                     .antMatchers("/resources/**", "/css/**", "/webjars/**", "/", "/index").permitAll()
                     .anyRequest().authenticated()
+                .and()
+                .csrf().ignoringAntMatchers("/h2-console/**")
+                .and()
+                .headers().frameOptions().sameOrigin()
                 .and()
                 .formLogin()
                     .loginPage("/login")

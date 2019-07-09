@@ -115,6 +115,7 @@ public class WarehouseServiceImpl implements IWarehouseService {
                 return Boolean.FALSE;
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             log.info("Failed creating delivery");
 
             return Boolean.FALSE;
