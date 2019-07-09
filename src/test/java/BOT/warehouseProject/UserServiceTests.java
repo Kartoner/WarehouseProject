@@ -1,9 +1,9 @@
 package BOT.warehouseProject;
 
+import BOT.warehouseProject.Authentication.Entity.Role;
 import BOT.warehouseProject.Authentication.Entity.User;
-import BOT.warehouseProject.Authentication.Enum.UserStatus;
 import BOT.warehouseProject.Authentication.Service.IUserService;
-import BOT.warehouseProject.Authentication.Service.Implementations.UserServiceImplementation;
+import BOT.warehouseProject.Authentication.Service.Implementation.UserServiceImpl;
 import BOT.warehouseProject.Database.Repository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,7 @@ public class UserServiceTests
     @TestConfiguration
     static class UserServiceTestsConfiguration{
         @Bean IUserService userServiceTest(){
-            return new UserServiceImplementation();
+            return new UserServiceImpl();
         }
     }
 
@@ -86,10 +86,10 @@ public class UserServiceTests
         String customerAddress = "customer address";
         String customerEmail = "customer email";
         String customerPhoneNumber = "customer phoneNumber";
-        UserStatus customerStatus = UserStatus.Customer;
+        Role customerRole = new Role("Customer");
 
         User customer = new User(customerName,
-                customerPassword, customerStatus,
+                customerPassword, customerRole,
                 customerName, customerSecondName, customerAddress,
                 customerEmail, customerPhoneNumber);
 
@@ -103,10 +103,11 @@ public class UserServiceTests
         String employeeAddress = "employee address";
         String employeeEmail = "employee email";
         String employeePhoneNumber = "employee phoneNumber";
-        UserStatus employeeStatus = UserStatus.Employee;
+        Role employeeRole = new Role("Employee");
 
         User employee = new User(employeeName,
-                employeePassword, employeeStatus,employeeName, employeeSecondName, employeeAddress,
+                employeePassword, employeeRole,
+                employeeName, employeeSecondName, employeeAddress,
                 employeeEmail, employeePhoneNumber);
 
         return employee;

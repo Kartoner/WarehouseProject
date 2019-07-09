@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -32,6 +33,12 @@ public class Delivery {
     @Column(name = "delivery_status", nullable = false)
     private DeliveryStatus deliveryStatus;
 
+    @Column(name = "order_date", nullable = false)
+    private String orderDate;
+
+    @Column(name = "completion_date")
+    private String completionDate;
+
     @ElementCollection(targetClass = WarehouseItemData.class)
     @CollectionTable(name="delivery_item")
     @JoinColumn(name="delivery_id", referencedColumnName = "id")
@@ -51,6 +58,8 @@ public class Delivery {
                     UserData customerOrdering,
                     String deliveryAddress,
                     DeliveryStatus deliveryStatus,
+                    String orderDate,
+                    String completionDate,
                     Set<WarehouseItemData> itemsOrdered,
                     Double overallPrice,
                     Boolean isPaid) {
@@ -58,6 +67,8 @@ public class Delivery {
         this.customerOrdering = customerOrdering;
         this.deliveryAddress = deliveryAddress;
         this.deliveryStatus = deliveryStatus;
+        this.orderDate = orderDate;
+        this.completionDate = completionDate;
         this.itemsOrdered = itemsOrdered;
         this.overallPrice = overallPrice;
         this.isPaid = isPaid;
@@ -102,6 +113,14 @@ public class Delivery {
     public void setDeliveryStatus(DeliveryStatus deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
     }
+
+    public String getOrderDate() { return orderDate; }
+
+    public void setOrderDate(String orderDate) { this.orderDate = orderDate; }
+
+    public String getCompletionDate() { return completionDate; }
+
+    public void setCompletionDate(String completionDate) { this.completionDate = completionDate; }
 
     public Set<WarehouseItemData> getItemsOrdered() {
         return itemsOrdered;

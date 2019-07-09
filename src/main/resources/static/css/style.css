@@ -1,0 +1,55 @@
+body {
+    background-color: cyan;
+}
+
+ul.nav li a, ul.nav li a:visited {
+    color: black !important;
+}
+
+.container {
+    border: 3px solid darkgray;
+}
+
+.infoArea {
+    padding: 10px;
+}
+
+.btn {
+    float: right !important;
+}
+
+.btn a {
+    color: black !important;
+}
+
+.btn-add {
+    background-color: greenyellow !important;
+}
+
+.btn-remove {
+    background-color: red !important;
+}
+
+.btn-disabled {
+    background-color: grey !important;
+}
+
+.navbar-container {
+    float: left;
+    background-color: cornflowerblue;
+    width: 250px !important;
+    padding: 10px;
+    height: 100%;
+}
+
+thead {
+    background-color: darkblue !important;
+    color: white !important;
+}
+
+.mainWindow {
+    float: left;
+    width: fit-content !important;
+    top: 0px !important;
+    height: 100%;
+}

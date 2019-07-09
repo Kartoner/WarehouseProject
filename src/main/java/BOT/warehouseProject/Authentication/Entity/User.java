@@ -1,6 +1,5 @@
 package BOT.warehouseProject.Authentication.Entity;
 
-import BOT.warehouseProject.Authentication.Enum.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,10 +21,8 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_status", nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private UserStatus userStatus;
+    @ManyToOne
+    private Role userRole;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -42,12 +39,14 @@ public class User {
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
+    private String roleName;
+
     public User() {
     }
 
     public User(String username,
                 String password,
-                UserStatus userStatus,
+                Role userRole,
                 String firstName,
                 String lastName,
                 String address,
@@ -55,12 +54,13 @@ public class User {
                 String phoneNumber) {
         this.username = username;
         this.password = password;
-        this.userStatus = userStatus;
         this.firstName = firstName;
+        this.userRole = userRole;
         this.lastName = lastName;
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.roleName = this.userRole.getName();
     }
 
     public Long getUserId() {
@@ -87,12 +87,12 @@ public class User {
         this.password = password;
     }
 
-    public UserStatus getUserStatus() {
-        return userStatus;
+    public Role getUserRole() {
+        return userRole;
     }
 
-    public void setUserStatus(UserStatus userStatus) {
-        this.userStatus = userStatus;
+    public void setUserRole(Role userRole) {
+        this.userRole = userRole;
     }
 
     public String getFirstName() {
@@ -135,13 +135,25 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getFullname(){
+        return this.firstName + " " + this.lastName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", userStatus=" + userStatus +
+                ", userRole=" + userRole.getName() +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", address='" + address + '\'' +

@@ -1,23 +1,20 @@
 package BOT.warehouseProject.Authentication.Value;
 
-import BOT.warehouseProject.Authentication.Enum.UserStatus;
-
-
 public class UserData {
 
     private Long id;
 
-    private String username;
+    private String fullName;
 
-    private UserStatus userStatus;
+    private String userRole;
 
     public UserData() {
     }
 
-    public UserData(Long id, String username, UserStatus userStatus) {
+    public UserData(Long id, String fullName, String userRole) {
         this.id = id;
-        this.username = username;
-        this.userStatus = userStatus;
+        this.fullName = fullName;
+        this.userRole = userRole;
     }
 
     public Long getUserId() {
@@ -28,28 +25,28 @@ public class UserData {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public UserStatus getUserStatus() {
-        return userStatus;
+    public String getUserRole() {
+        return userRole;
     }
 
-    public void setUserStatus(UserStatus userStatus) {
-        this.userStatus = userStatus;
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 
     @Override
     public String toString() {
         return "UserData{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
-                ", userStatus=" + userStatus +
+                ", fullName='" + fullName + '\'' +
+                ", userRole=" + userRole +
                 '}';
     }
 }

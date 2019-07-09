@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 
 @Embeddable
 public class WarehouseItemData {
@@ -20,6 +21,7 @@ public class WarehouseItemData {
     @Digits(integer = 10, fraction = 2)
     private Double price;
 
+    @Min(value = 0, message = "Item quantity should be higher than or equal to 0")
     private Integer quantity;
 
     public WarehouseItemData() {

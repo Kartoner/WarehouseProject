@@ -34,4 +34,6 @@ public interface IWarehouseService {
     public List<Delivery> getAllDeliveries();
 
     public List<Delivery> getDeliveriesByStatus(DeliveryStatus deliveryStatus);
+
+    public List<Delivery> getDeliveriesForUser(Long id);
 }

@@ -6,6 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "warehouse_item")
@@ -27,6 +28,7 @@ public class WarehouseItem {
     private String itemDescription;
 
     @ColumnDefault("0")
+    @Min(value = 0, message = "Item quantity should be higher than or equal to 0")
     private Integer quantity;
 
     @ColumnDefault("0.0")
